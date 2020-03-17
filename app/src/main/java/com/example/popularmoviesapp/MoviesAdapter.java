@@ -2,6 +2,7 @@ package com.example.popularmoviesapp;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +13,10 @@ import com.squareup.picasso.Picasso;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
 
-    final private ListItemClickListener mOnClickListener;
-    private int mNumberItems;
+    final private MoviesAdapterListItemClickListener mOnClickListener;
+    private String[] mNumberItems;
 
-    public MoviesAdapter(int numberOfMovies, ListItemClickListener listener) {
+    public MoviesAdapter(String[] numberOfMovies, MoviesAdapterListItemClickListener listener) {
         mNumberItems = numberOfMovies;
         mOnClickListener = listener;
     }
@@ -36,14 +37,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
     @Override
     public int getItemCount() {
-        return mNumberItems;
+        if (null == mNumberItems) return 0;
+        return mNumberItems.length;
     }
 
-    public interface ListItemClickListener{
+    public interface MoviesAdapterListItemClickListener {
         void onListItemClick(int item);
     }
 
-    public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView mMoviePoster;
 
@@ -67,5 +69,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             int adapterPosition = getAdapterPosition();
             mOnClickListener.onListItemClick(adapterPosition);
         }
+    }
+
+    public void setMoviesData(){
+        notifyDataSetChanged();
     }
 }
