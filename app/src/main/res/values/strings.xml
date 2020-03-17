@@ -4,4 +4,8 @@
     <!-- Menu titles-->
     <string name="most_popular"> Most Popular</string>
     <string name="highest_rated"> Highest Rated</string>
+
+    <!-- Poster stuff -->
+    <string name="error_message">Please refresh, an error has occured</string>
+    <string name="the_movie_poster_string">The Movie Poster</string>
 </resources>
