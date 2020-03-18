@@ -8,15 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.popularmoviesapp.models.Movie;
+
 
 import com.squareup.picasso.Picasso;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
 
     final private MoviesAdapterListItemClickListener mOnClickListener;
-    private String[] mNumberItems;
+    private Movie[] mNumberItems;
 
-    public MoviesAdapter(String[] numberOfMovies, MoviesAdapterListItemClickListener listener) {
+    public MoviesAdapter(Movie[] numberOfMovies, MoviesAdapterListItemClickListener listener) {
         mNumberItems = numberOfMovies;
         mOnClickListener = listener;
     }
@@ -32,7 +34,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
     @Override
     public void onBindViewHolder(MoviesViewHolder moviesViewHolder, int position) {
-        moviesViewHolder.bind(moviesViewHolder);
+        moviesViewHolder.bind(moviesViewHolder, position);
     }
 
     @Override
@@ -56,9 +58,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             itemView.setOnClickListener(this);
         }
 
-        void bind(MoviesViewHolder moviesViewHolder) {
+        void bind(MoviesViewHolder moviesViewHolder, int pos) {
             Picasso.get()
-                    .load("")
+                    .load(mNumberItems[pos].getMoviePoster())
                     .placeholder(R.drawable.movie_poster_placeholder_image)
                     .error(R.drawable.not_found_poster_image)
                     .into(moviesViewHolder.mMoviePoster);
