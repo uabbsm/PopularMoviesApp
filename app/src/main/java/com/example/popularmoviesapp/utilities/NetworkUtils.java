@@ -32,7 +32,7 @@ public class NetworkUtils {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        return null;
+        return url;
     }
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
@@ -41,7 +41,7 @@ public class NetworkUtils {
         try {
             InputStream in = urlConnection.getInputStream();
 
-            Scanner scanner = new Scanner(System.in);
+            Scanner scanner = new Scanner(in);
             scanner.useDelimiter("\\A");
 
             boolean hasInput = scanner.hasNext();
