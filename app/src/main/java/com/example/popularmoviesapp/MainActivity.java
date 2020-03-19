@@ -44,12 +44,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mLoadingIndicator = (ProgressBar) findViewById(R.id.progressbar);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
-<<<<<<< Updated upstream
         mLayoutManager = new GridLayoutManager(this, 100);
         mMoviesAdapter = new MoviesAdapter(mMovies,this);
-=======
-        GridLayoutManager LayoutManager = new GridLayoutManager(this, 2);
->>>>>>> Stashed changes
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
@@ -66,12 +62,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     @Override
     public void onListItemClick(int item){
         Context context = this;
-<<<<<<< Updated upstream
-=======
-        Intent intent = new Intent(this, MovieDetailsActivity.class);\
-        intent.putExtra("Movie", mMovies[item]);
-        startActivity(intent);
->>>>>>> Stashed changes
         Toast.makeText(context, "Item nº: " + item + " has been clicked", Toast.LENGTH_SHORT)
                 .show();
     }
