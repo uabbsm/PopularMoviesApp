@@ -1,9 +1,6 @@
 package com.example.popularmoviesapp.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-public class Movie extends Parcelable{
+public class Movie {
 
     private String movieTitle;
     private String moviePoster;
