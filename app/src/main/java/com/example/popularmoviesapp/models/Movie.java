@@ -3,9 +3,7 @@ package com.example.popularmoviesapp.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-
-public class Movie implements Parcelable {
-
+public class Movie implements Parcelable { // Implement Parcelable so we can serialize the object to be easier to send it between different components
     private String movieTitle;
     private String moviePoster;
     private String movieRelease;
@@ -20,17 +18,15 @@ public class Movie implements Parcelable {
         this.movieOverview = movieOverview;
     }
 
-
-    protected Movie(Parcel in) {
+    protected Movie(Parcel in) { // Parcelable constructor
         movieTitle = in.readString();
-        movieOverview = in.readString();
         moviePoster = in.readString();
-        movieRate = in.readString();
         movieRelease = in.readString();
+        movieRate = in.readString();
+        movieOverview = in.readString();
     }
 
-    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
-
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() { // The Parcel. Creator, we read the parcel data.
         @Override
         public Movie createFromParcel(Parcel in) {
             return new Movie(in);
@@ -47,16 +43,14 @@ public class Movie implements Parcelable {
         return 0;
     }
 
-
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest, int flags) { // writeToParcel method we simply write all the class attributes.
         dest.writeString(movieTitle);
         dest.writeString(moviePoster);
         dest.writeString(movieRelease);
         dest.writeString(movieRate);
         dest.writeString(movieOverview);
     }
-
     public String getMovieTitle() {
         return movieTitle;
     }
