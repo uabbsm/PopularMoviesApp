@@ -1,7 +1,5 @@
 package com.example.popularmoviesapp.utilities;
 
-import android.content.Context;
-
 import com.example.popularmoviesapp.models.Movie;
 
 import org.json.JSONArray;
@@ -18,9 +16,9 @@ public class MovieDetailsJsonUtils {
     private static final String OVERVIEW = "overview";
 
     private static final String POSTER_BASE_ULT = "http://image.tmdb.org/t/p/";
-    private static final String POSTER_SIZE = "w185";
+    private static final String POSTER_SIZE = "w500";
 
-    public static Movie[] getSimpleInfoStringsFromJson(Context context, String json) throws JSONException {
+    public static Movie[] getSimpleInfoStringsFromJson(String json) throws JSONException {
 
         JSONObject moviesJson = new JSONObject(json);
 

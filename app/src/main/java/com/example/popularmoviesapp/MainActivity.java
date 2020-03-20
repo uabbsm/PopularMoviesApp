@@ -7,16 +7,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.content.Context;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.DisplayMetrics;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import com.example.popularmoviesapp.models.Movie;
 import com.example.popularmoviesapp.utilities.MovieDetailsJsonUtils;
@@ -29,12 +31,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     public static final String POPULAR_QUERY = "popular";
     public static final String TOP_RATED_QUERY = "top_rated";
 
-    private RecyclerView mRecyclerView;
+
+    @BindView(R.id.recycle_view_movies)
+    RecyclerView mRecyclerView;
+
     private MoviesAdapter mMoviesAdapter;
 
-    private TextView mErrorMessageDisplay;
+    @BindView(R.id.tv_error_message_display)
+    TextView mErrorMessageDisplay;
 
-    private ProgressBar mLoadingIndicator;
+    @BindView(R.id.progressbar)
+    ProgressBar mLoadingIndicator;
 
     private Movie[] mMovies;
 
@@ -43,11 +50,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycle_view_movies);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.progressbar);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+        ButterKnife.bind(this);
 
-        GridLayoutManager LayoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager LayoutManager = new GridLayoutManager(this, calculateNoOfColumns(this));
 
         mRecyclerView.setLayoutManager(LayoutManager);
         mRecyclerView.setHasFixedSize(true);
@@ -65,14 +70,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     @Override
     public void onListItemClick(int item) {
 
-        Context context = this;
-
         Intent intent = new Intent(this, MovieDetailsActivity.class);
         intent.putExtra("Movie", mMovies[item]);
         startActivity(intent);
-
-        Toast.makeText(context, "Item nº: " + item + " has been clicked", Toast.LENGTH_SHORT)
-                .show();
     }
 
     @Override
@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class FetchMovieTask extends AsyncTask<String, Void, Movie[]> {
 
         @Override
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                         getResponseFromHttpUrl(movieRequestURL);
 
                 mMovies = MovieDetailsJsonUtils.
-                        getSimpleInfoStringsFromJson(MainActivity.this, jsonMovieResponse);
+                        getSimpleInfoStringsFromJson(jsonMovieResponse);
 
                 return mMovies;
             } catch (Exception e) {
@@ -146,5 +147,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private void showErrorMessage() {
         mRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    public static int calculateNoOfColumns(Context context){
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        return (int) (dpWidth / 180);
     }
 }

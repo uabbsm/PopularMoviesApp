@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="twentyFourDP">24dp</dimen>
-    <dimen name="sixteenDP">16dp</dimen>
-    <dimen name="twentyTextSize">20sp</dimen>
-    <dimen name="textViewHeigth">150dp</dimen>
-    <dimen name="imageViewHeight">285dp</dimen>
-    <dimen name="imageViewWidth">101dp</dimen>
-    <dimen name="eightDP">8dp</dimen>
-    <dimen name="fortyDP">40dp</dimen>
-    <dimen name="thirtyTextSize">30sp</dimen>
-    <dimen name="eigthteenTextSize">18sp</dimen>
-    <dimen name="twentyFourMarginTop">24dp</dimen>
+    <dimen name="movie_title_height">150dp</dimen>
+    <dimen name="description_text_size">20sp</dimen>
+    <dimen name="rating_text_size">18sp</dimen>
+    <dimen name="year_text_size">30sp</dimen>
 </resources>

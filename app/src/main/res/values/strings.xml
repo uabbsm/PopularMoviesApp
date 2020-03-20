@@ -7,11 +7,11 @@
 
     <!-- Poster stuff -->
     <string name="error_message">Please refresh, an error has occured</string>
-    <string name="the_movie_poster_string">The Movie Poster</string>
-    <string name="movie_name_tv">Movie Name</string>
+    <string name="the_movie_poster">The Movie Poster</string>
+    <string name="movie_name">Movie Name</string>
     <string name="movie_poster_description">The movie poster</string>
-    <string name="year_tv">Year</string>
+    <string name="year">Year</string>
     <string name="duration_tv">Duration</string>
-    <string name="rating_tv">Rating</string>
-    <string name="description_tv">Description</string>
+    <string name="rating">Rating</string>
+    <string name="description">Description</string>
 </resources>
