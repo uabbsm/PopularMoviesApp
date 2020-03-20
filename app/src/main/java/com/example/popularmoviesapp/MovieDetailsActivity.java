@@ -18,7 +18,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @BindView(R.id.details_poster)
     ImageView mMoviePoster;
 
-    @BindView(R.id.movie_title_tv)
+    @BindView(R.id.details_movie_title_tv)
     TextView mMovieTitle;
 
     @BindView(R.id.details_year_tv)
@@ -29,6 +29,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.details_description_tv)
     TextView mMovieDescription;
+
+    @BindView(R.id.details_duration_tv)
+    TextView mMovieDuration;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,19 +61,25 @@ public class MovieDetailsActivity extends AppCompatActivity {
             // substring to get the 4 first characters of the string. The year
             mMovieYear.setText(movie.getMovieRelease().substring(0, 4));
         }else{
-            mMovieTitle.setText(notAvailable);
+            mMovieYear.setText(notAvailable);
         }
 
         if(movie.getMovieRate() != null && !(movie.getMovieRate().equals(""))){
             mMovieRating.setText(movie.getMovieRate() + "/10");
         }else{
-            mMovieTitle.setText(notAvailable);
+            mMovieRating.setText(notAvailable);
         }
 
         if(movie.getMovieOverview() != null && !(movie.getMovieOverview().equals(""))){
             mMovieDescription.setText(movie.getMovieOverview());
         }else{
-            mMovieTitle.setText(notAvailable);
+            mMovieDescription.setText(notAvailable);
+        }
+
+        if(movie.getMovieDuration() != null && !(movie.getMovieDuration().equals(""))){
+            mMovieDuration.setText(movie.getMovieOverview() + "min");
+        }else{
+            mMovieDuration.setText(notAvailable);
         }
 
         Picasso.get()

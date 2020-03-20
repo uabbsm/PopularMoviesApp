@@ -14,6 +14,7 @@ public class MovieDetailsJsonUtils {
     private static final String RELEASE_DATE = "release_date";
     private static final String VOTE_AVERAGE = "vote_average";
     private static final String OVERVIEW = "overview";
+    private static final String DURATION = "runtime";
 
     private static final String POSTER_BASE_ULT = "http://image.tmdb.org/t/p/";
     private static final String POSTER_SIZE = "w500";
@@ -33,12 +34,14 @@ public class MovieDetailsJsonUtils {
             String movieRelease = moviesResultJsonArray.getJSONObject(i).optString(RELEASE_DATE);
             String movieRate = moviesResultJsonArray.getJSONObject(i).optString(VOTE_AVERAGE);
             String movieOverview = moviesResultJsonArray.getJSONObject(i).optString(OVERVIEW);
+            String movieDuration = moviesResultJsonArray.getJSONObject(i).optString(DURATION);
 
             moviesDetailsArray[i] = new Movie(movieTitle,
                     POSTER_BASE_ULT + POSTER_SIZE + moviePoster,
                     movieRelease,
                     movieRate,
-                    movieOverview);
+                    movieOverview,
+                    movieDuration);
         }
         return moviesDetailsArray;
     }
