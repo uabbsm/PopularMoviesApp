@@ -1,6 +1,7 @@
 package com.example.popularmoviesapp.utilities;
 
 import android.net.Uri;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
