@@ -14,6 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.DisplayMetrics;
 
 import com.example.popularmoviesapp.models.Movie;
 import com.example.popularmoviesapp.utilities.MovieDetailsJsonUtils;
@@ -44,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mLoadingIndicator = (ProgressBar) findViewById(R.id.progressbar);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
-        GridLayoutManager LayoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager LayoutManager = new GridLayoutManager(this, calculateNoOfColumns(this));
 
         mRecyclerView.setLayoutManager(LayoutManager);
         mRecyclerView.setHasFixedSize(true);
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class FetchMovieTask extends AsyncTask<String, Void, Movie[]> {
 
         @Override
@@ -108,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                         getResponseFromHttpUrl(movieRequestURL);
 
                 mMovies = MovieDetailsJsonUtils.
-                        getSimpleInfoStringsFromJson(MainActivity.this, jsonMovieResponse);
+                        getSimpleInfoStringsFromJson(jsonMovieResponse);
 
                 return mMovies;
             } catch (Exception e) {
@@ -138,5 +142,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private void showErrorMessage() {
         mRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    public static int calculateNoOfColumns(Context context){
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        return (int) (dpWidth / 180);
     }
 }
