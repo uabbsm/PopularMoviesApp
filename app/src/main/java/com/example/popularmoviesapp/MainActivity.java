@@ -7,16 +7,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.content.Context;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.popularmoviesapp.models.Movie;
 import com.example.popularmoviesapp.utilities.MovieDetailsJsonUtils;
@@ -65,14 +62,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     @Override
     public void onListItemClick(int item) {
 
-        Context context = this;
-
         Intent intent = new Intent(this, MovieDetailsActivity.class);
         intent.putExtra("Movie", mMovies[item]);
         startActivity(intent);
-
-        Toast.makeText(context, "Item nº: " + item + " has been clicked", Toast.LENGTH_SHORT)
-                .show();
     }
 
     @Override
