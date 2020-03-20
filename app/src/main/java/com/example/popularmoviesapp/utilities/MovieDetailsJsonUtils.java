@@ -23,6 +23,7 @@ public class MovieDetailsJsonUtils {
     public static Movie[] getSimpleInfoStringsFromJson(Context context, String json) throws JSONException {
 
         JSONObject moviesJson = new JSONObject(json);
+
         JSONArray moviesResultJsonArray = moviesJson.getJSONArray(RESULTS);
 
         Movie[] moviesDetailsArray = new Movie[moviesResultJsonArray.length()];

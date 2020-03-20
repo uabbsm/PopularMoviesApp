@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private MoviesAdapter mMoviesAdapter;
 
     private TextView mErrorMessageDisplay;
+
     private ProgressBar mLoadingIndicator;
 
     private Movie[] mMovies;
@@ -46,11 +47,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mLoadingIndicator = (ProgressBar) findViewById(R.id.progressbar);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
-        mMoviesAdapter = new MoviesAdapter(mMovies, this);
         GridLayoutManager LayoutManager = new GridLayoutManager(this, 2);
 
         mRecyclerView.setLayoutManager(LayoutManager);
         mRecyclerView.setHasFixedSize(true);
+
         mRecyclerView.setAdapter(mMoviesAdapter);
 
         loadMovieData(POPULAR_QUERY);
@@ -63,9 +64,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     @Override
     public void onListItemClick(int item) {
+
         Context context = this;
+
         Intent intent = new Intent(this, MovieDetailsActivity.class);
+        intent.putExtra("Movie", mMovies[item]);
         startActivity(intent);
+
         Toast.makeText(context, "Item nº: " + item + " has been clicked", Toast.LENGTH_SHORT)
                 .show();
     }
@@ -98,9 +103,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         @Override
         protected Movie[] doInBackground(String... strings) {
+
             if (strings.length == 0) {
                 return null;
             }
+
             String searchQuery = strings[0];
             URL movieRequestURL = NetworkUtils.buildUrl(searchQuery);
 
