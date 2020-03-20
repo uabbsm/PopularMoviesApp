@@ -4,4 +4,7 @@
     <dimen name="description_text_size">20sp</dimen>
     <dimen name="rating_text_size">18sp</dimen>
     <dimen name="year_text_size">30sp</dimen>
+    <dimen name="detailscreen_element_margin">10dp</dimen>
+    <dimen name="detailsceen_title_padding_left">20dp</dimen>
+    <dimen name="detailsceen_title_text_size">30sp</dimen>
 </resources>
