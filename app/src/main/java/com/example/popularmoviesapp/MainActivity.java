@@ -17,6 +17,8 @@ import android.widget.TextView;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.DisplayMetrics;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import com.example.popularmoviesapp.models.Movie;
 import com.example.popularmoviesapp.utilities.MovieDetailsJsonUtils;
@@ -29,12 +31,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     public static final String POPULAR_QUERY = "popular";
     public static final String TOP_RATED_QUERY = "top_rated";
 
-    private RecyclerView mRecyclerView;
+
+    @BindView(R.id.recycle_view_movies)
+    RecyclerView mRecyclerView;
+
     private MoviesAdapter mMoviesAdapter;
 
-    private TextView mErrorMessageDisplay;
+    @BindView(R.id.tv_error_message_display)
+    TextView mErrorMessageDisplay;
 
-    private ProgressBar mLoadingIndicator;
+    @BindView(R.id.progressbar)
+    ProgressBar mLoadingIndicator;
 
     private Movie[] mMovies;
 
@@ -43,9 +50,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycle_view_movies);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.progressbar);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+        ButterKnife.bind(this);
 
         GridLayoutManager LayoutManager = new GridLayoutManager(this, calculateNoOfColumns(this));
 
