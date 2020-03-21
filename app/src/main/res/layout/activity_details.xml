@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,7 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,8 +22,8 @@
                 android:layout_height="@dimen/movie_title_height"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:paddingLeft="@dimen/detailsceen_title_padding_left"
                 android:paddingStart="@dimen/detailsceen_title_padding_left"
+                android:paddingLeft="@dimen/detailsceen_title_padding_left"
                 android:shadowColor="@android:color/black"
                 android:shadowDx="-2"
                 android:shadowDy="-2"
@@ -39,8 +38,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="9"
-                app:srcCompat="@drawable/unselected_favourite"/>
+                android:layout_weight="6"
+                app:srcCompat="@drawable/unselected_favourite" />
         </LinearLayout>
 
         <LinearLayout
@@ -120,7 +119,7 @@
             android:id="@+id/details_trailers_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/detailscreen_element_margin" >
+            android:layout_margin="@dimen/detailscreen_element_margin">
 
         </androidx.recyclerview.widget.RecyclerView>
 
