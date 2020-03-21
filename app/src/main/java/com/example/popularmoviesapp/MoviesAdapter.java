@@ -23,7 +23,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         mOnClickListener = listener;
     }
 
-    @NonNull
     @Override
     public MoviesViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
@@ -47,25 +46,26 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         void onListItemClick(int item);
     }
 
-    public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public final ImageView mMoviePoster;
+        private final ImageView mMoviePoster;
 
         private MoviesViewHolder(View itemView) {
             super(itemView);
-
             mMoviePoster = (ImageView) itemView.findViewById(R.id.iv_movie);
             itemView.setOnClickListener(this);
         }
 
         void bind(int pos) {
-
             String imagePath = mNumberItems[pos].getMoviePoster();
             Picasso.get()
                     .load(imagePath)
                     .placeholder(R.drawable.movie_poster_placeholder_image)
                     .error(R.drawable.not_found_poster_image)
                     .into(mMoviePoster);
+            // There was an issue with http images coming from the server. The Picasso as well as Glide (tried both)
+            // could not load 'http', only 'https' urls. Therefore I implement this solution found on SO: https://stackoverflow.com/questions/53288020/picasso-doesnt-load-images-from-http-links-in-api-28
+            // Including "android:usesCleartextTraffic="true"" into the Manifest solve the issue. Not the best way though as far as I can say.
         }
 
         @Override
@@ -75,7 +75,4 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         }
     }
 
-    public void setMoviesData() {
-        notifyDataSetChanged();
-    }
 }
