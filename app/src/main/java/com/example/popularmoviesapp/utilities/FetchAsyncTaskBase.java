@@ -36,13 +36,13 @@ public class FetchAsyncTaskBase extends AsyncTask<Void, Void, Void> {
             String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestURL);
             switch (searchQuery) {
                 case "top_rated":
-                    mMovies = MovieDetailsJsonUtils.getSimpleMovieStringsFromJson(jsonMovieResponse);
+                    mMovies = BaseJsonUtils.getSimpleMovieStringsFromJson(jsonMovieResponse);
                     break;
                 case "popular":
-                    mMovies = MovieDetailsJsonUtils.getSimpleMovieStringsFromJson(jsonMovieResponse);
+                    mMovies = BaseJsonUtils.getSimpleMovieStringsFromJson(jsonMovieResponse);
                     break;
                 default:
-                    mDetailMovies = MovieDetailsJsonUtils.getDetailMovieStringsFromJson(jsonMovieResponse);
+                    mDetailMovies = BaseJsonUtils.getDetailMovieStringsFromJson(jsonMovieResponse);
             }
 
 

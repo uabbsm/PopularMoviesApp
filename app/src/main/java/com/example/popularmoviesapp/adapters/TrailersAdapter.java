@@ -1,4 +1,4 @@
-package com.example.popularmoviesapp.utilities;
+package com.example.popularmoviesapp.adapters;
 
 
 import androidx.annotation.NonNull;

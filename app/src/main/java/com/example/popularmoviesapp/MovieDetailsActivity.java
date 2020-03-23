@@ -3,7 +3,6 @@ package com.example.popularmoviesapp;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -15,7 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.popularmoviesapp.R;
+import com.example.popularmoviesapp.adapters.ReviewsAdapter;
 import com.example.popularmoviesapp.models.DetailMovie;
 import com.example.popularmoviesapp.models.Movie;
 import com.example.popularmoviesapp.models.Review;
@@ -23,9 +22,8 @@ import com.example.popularmoviesapp.models.Trailer;
 import com.example.popularmoviesapp.utilities.AsyncTaskCompleteListener;
 import com.example.popularmoviesapp.utilities.FetchAsyncTaskBase;
 import com.example.popularmoviesapp.utilities.NetworkUtils;
-import com.example.popularmoviesapp.utilities.ReviewsJsonUtils;
-import com.example.popularmoviesapp.utilities.TrailerJsonUtils;
-import com.example.popularmoviesapp.utilities.TrailersAdapter;
+import com.example.popularmoviesapp.utilities.BaseJsonUtils;
+import com.example.popularmoviesapp.adapters.TrailersAdapter;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -53,7 +51,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
     TextView mNoTrailers;
     @BindView(R.id.details_reviews_recycler_view)
     RecyclerView mReviewsRecyclerView;
-    private  ReviewsAdapter mReviewsAdapter;
+    private ReviewsAdapter mReviewsAdapter;
     @BindView(R.id.details_trailers_recycler_view)
     RecyclerView mTrailersRecyclerView;
     private  TrailersAdapter mTrailersAdapter;
@@ -169,7 +167,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
             try {
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(NetworkUtils.buildUrl(params[0]));
 
-                return ReviewsJsonUtils.getReviewsStringsFromJson(jsonMovieResponse);
+                return BaseJsonUtils.getReviewsStringsFromJson(jsonMovieResponse);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -206,7 +204,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
             try {
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(NetworkUtils.buildUrl(params[0]));
 
-                return TrailerJsonUtils.getTrailersStringsFromJson(jsonMovieResponse);
+                return BaseJsonUtils.getTrailersStringsFromJson(jsonMovieResponse);
 
             } catch (Exception e) {
                 e.printStackTrace();
