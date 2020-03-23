@@ -119,6 +119,13 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/no_trailers_tv"
+            android:paddingLeft="8sp"
+            android:visibility="visible"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/details_trailers_recycler_view"
             android:layout_width="match_parent"

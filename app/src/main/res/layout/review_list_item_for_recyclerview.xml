@@ -22,7 +22,7 @@
         android:text="Comment" />
 
     <View
-        android:id="@+id/divider"
+        android:id="@+id/divider_for_review_list"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_marginTop="8sp"
