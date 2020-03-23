@@ -119,10 +119,17 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/no_trailers_tv"
+            android:paddingLeft="8sp"
+            android:visibility="visible"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/details_trailers_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/detailscreen_element_margin" >
 
         </androidx.recyclerview.widget.RecyclerView>
@@ -155,8 +162,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/details_reviews_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/detailscreen_element_margin" />
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/detailscreen_element_margin"
+            android:paddingBottom="50sp"/>
 
     </LinearLayout>
 </ScrollView>

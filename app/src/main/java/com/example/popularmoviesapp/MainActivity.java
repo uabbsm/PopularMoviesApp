@@ -15,21 +15,28 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.os.Parcelable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import com.example.popularmoviesapp.adapters.MoviesAdapter;
 import com.example.popularmoviesapp.models.Movie;
 import com.example.popularmoviesapp.utilities.AsyncTaskCompleteListener;
 import com.example.popularmoviesapp.utilities.FetchAsyncTaskBase;
-
-import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
         implements MoviesAdapter.MoviesAdapterListItemClickListener, AsyncTaskCompleteListener {
 
     public static final String POPULAR_QUERY = "popular";
     public static final String TOP_RATED_QUERY = "top_rated";
+
+    private static Bundle mBundleRecyclerViewState;
+    private Movie[] mMovies;
+
+    String query = "popular";
+    private final String KEY_RECYCLER_STATE = "recycler";
+    public static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
 
     @BindView(R.id.recycle_view_movies)
     RecyclerView mRecyclerView;
@@ -41,11 +48,13 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.progressbar)
     ProgressBar mLoadingIndicator;
 
-    private Movie[] mMovies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState != null){
+            query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
+        }
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
@@ -57,7 +66,7 @@ public class MainActivity extends AppCompatActivity
 
         mRecyclerView.setAdapter(mMoviesAdapter);
 
-        loadMovieData(POPULAR_QUERY);
+        loadMovieData(query);
     }
 
     private void loadMovieData(String query){
@@ -86,8 +95,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if(id == R.id.sort_most_popular){
+            query = POPULAR_QUERY;
             loadMovieData(POPULAR_QUERY);
         }else{
+            query = TOP_RATED_QUERY;
             loadMovieData(TOP_RATED_QUERY);
         }
 
@@ -123,6 +134,41 @@ public class MainActivity extends AppCompatActivity
         } else {
             showErrorMessage();
         }
+    }
 
+    //LifeCycle Mewthod's
+
+    /**
+     *
+     *
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        String lifecycleSortBy = query;
+        outState.putString(LIFECYCLE_CALLBACKS_TEXT_KEY, lifecycleSortBy);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onPause() {
+        mBundleRecyclerViewState = new Bundle();
+        Parcelable listState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mBundleRecyclerViewState != null){
+            Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
+        }
     }
 }

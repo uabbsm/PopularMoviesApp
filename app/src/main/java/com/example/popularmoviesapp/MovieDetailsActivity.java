@@ -1,32 +1,37 @@
 package com.example.popularmoviesapp;
 
-import androidx.annotation.Nullable;
+import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
+import android.net.Uri;
+import android.widget.Toast;
+import android.content.Intent;
+import android.os.AsyncTask;
 import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.os.Bundle;
-import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
+import com.example.popularmoviesapp.adapters.ReviewsAdapter;
 import com.example.popularmoviesapp.models.DetailMovie;
 import com.example.popularmoviesapp.models.Movie;
 import com.example.popularmoviesapp.models.Review;
-import com.example.popularmoviesapp.utilities.ReviewsJsonUtils;
+import com.example.popularmoviesapp.models.Trailer;
 import com.example.popularmoviesapp.utilities.AsyncTaskCompleteListener;
 import com.example.popularmoviesapp.utilities.FetchAsyncTaskBase;
-import com.example.popularmoviesapp.utilities.MovieDetailsJsonUtils;
 import com.example.popularmoviesapp.utilities.NetworkUtils;
+import com.example.popularmoviesapp.utilities.BaseJsonUtils;
+import com.example.popularmoviesapp.adapters.TrailersAdapter;
 import com.squareup.picasso.Picasso;
 
-import java.net.URL;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-public class MovieDetailsActivity extends AppCompatActivity implements AsyncTaskCompleteListener {
+public class MovieDetailsActivity extends AppCompatActivity implements AsyncTaskCompleteListener, TrailersAdapter.TrailersAdapterListItemClickListener {
+
+    public static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
 
     @BindView(R.id.details_poster)
     ImageView mMoviePoster;
@@ -42,10 +47,16 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
     TextView mMovieDuration;
     @BindView(R.id.no_reviews_tv)
     TextView mNoReviews;
+    @BindView(R.id.no_trailers_tv)
+    TextView mNoTrailers;
     @BindView(R.id.details_reviews_recycler_view)
     RecyclerView mReviewsRecyclerView;
-
     private ReviewsAdapter mReviewsAdapter;
+    @BindView(R.id.details_trailers_recycler_view)
+    RecyclerView mTrailersRecyclerView;
+    private  TrailersAdapter mTrailersAdapter;
+
+    private Trailer[] mTrailerArray;
 
 
     @Override
@@ -61,16 +72,28 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(selectedMovie.getMovieId(), this);
         getMovies.execute();
 
+        loadReviewData(selectedMovie.getMovieId() + "/reviews");
+        loadTrailerData(selectedMovie.getMovieId() + "/videos");
+    }
+
+    private void loadReviewData(String query){
+
         LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
         mReviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
         mReviewsRecyclerView.setHasFixedSize(true);
         mReviewsRecyclerView.setAdapter(mReviewsAdapter);
 
-        loadReviewData(selectedMovie.getMovieId() + "/reviews");
+        new FetchReviewTask().execute(query);
     }
 
-    private void loadReviewData(String query){
-        new FetchReviewTask().execute(query);
+    private void loadTrailerData(String query){
+
+        LinearLayoutManager trailersLayoutManager = new LinearLayoutManager(this);
+        mTrailersRecyclerView.setLayoutManager(trailersLayoutManager);
+        mTrailersRecyclerView.setHasFixedSize(true);
+        mTrailersRecyclerView.setAdapter(mTrailersAdapter);
+
+        new FetchTrailerTask().execute(query);
     }
 
     @SuppressLint("SetTextI18n")
@@ -121,8 +144,17 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         populateUi((DetailMovie) movie);
     }
 
-    public class FetchReviewTask extends AsyncTask<String, Void, Review[]>{
+    @Override
+    public void onListItemClick(int item) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_BASE_URL + mTrailerArray[item].getKey()));
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Toast.makeText(getApplicationContext(), "There was an error while opening the link", Toast.LENGTH_SHORT).show();
+        }
+    }
 
+    public class FetchReviewTask extends AsyncTask<String, Void, Review[]> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -130,13 +162,14 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
 
         @Override
         protected Review[] doInBackground(String... params) {
-            if (params.length == 0) { return null; }
 
-            try{
+            if (params.length == 0){ return null; }
+            try {
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(NetworkUtils.buildUrl(params[0]));
 
-                return ReviewsJsonUtils.getReviewsStringsFromJson(jsonMovieResponse);
-            } catch (Exception e){
+                return BaseJsonUtils.getReviewsStringsFromJson(jsonMovieResponse);
+
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -144,16 +177,56 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
 
         @Override
         protected void onPostExecute(Review[] reviewData) {
-            if(reviewData != null ) {
+            if (reviewData != null) {
                 mReviewsAdapter = new ReviewsAdapter(reviewData);
                 if(mReviewsAdapter.getItemCount() == 0){
                     mNoReviews.setText(getApplicationContext().getString(R.string.no_reviews));
                     mNoReviews.setVisibility(View.VISIBLE);
-                }else {
+                }else{
                     mReviewsRecyclerView.setAdapter(mReviewsAdapter);
-                    mNoReviews.setVisibility(View.INVISIBLE);
+                    mNoReviews.setVisibility(View.GONE);
                 }
             }
         }
+
     }
+
+    public class FetchTrailerTask extends AsyncTask<String, Void, Trailer[]> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Trailer[] doInBackground(String... params) {
+
+            if (params.length == 0){ return null; }
+            try {
+                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(NetworkUtils.buildUrl(params[0]));
+
+                return BaseJsonUtils.getTrailersStringsFromJson(jsonMovieResponse);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Trailer[] trailerData) {
+            if (trailerData != null) {
+                mTrailersAdapter = new TrailersAdapter(MovieDetailsActivity.this, trailerData);
+                if(mTrailersAdapter.getItemCount() == 0){
+                    mNoTrailers.setText(getApplicationContext().getString(R.string.no_trailers));
+                    mNoTrailers.setVisibility(View.VISIBLE);
+                }else{
+                    mTrailerArray = trailerData;
+                    mTrailersRecyclerView.setAdapter(mTrailersAdapter);
+                    mNoTrailers.setVisibility(View.GONE);
+                }
+            }
+        }
+
+    }
+
 }

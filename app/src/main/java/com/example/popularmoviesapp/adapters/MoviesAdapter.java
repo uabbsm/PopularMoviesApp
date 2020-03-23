@@ -1,6 +1,5 @@
-package com.example.popularmoviesapp;
+package com.example.popularmoviesapp.adapters;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -8,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.popularmoviesapp.R;
 import com.example.popularmoviesapp.models.Movie;
 
 
