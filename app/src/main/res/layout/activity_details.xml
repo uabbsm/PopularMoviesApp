@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -8,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,8 +24,8 @@
                 android:layout_height="@dimen/movie_title_height"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:paddingStart="@dimen/detailsceen_title_padding_left"
                 android:paddingLeft="@dimen/detailsceen_title_padding_left"
+                android:paddingStart="@dimen/detailsceen_title_padding_left"
                 android:shadowColor="@android:color/black"
                 android:shadowDx="-2"
                 android:shadowDy="-2"
@@ -113,13 +115,15 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/detailscreen_element_margin"
             android:text="@string/trailers"
+            android:textColor="#4CAF50"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/details_trailers_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/detailscreen_element_margin">
+            android:layout_margin="@dimen/detailscreen_element_margin" >
 
         </androidx.recyclerview.widget.RecyclerView>
 
@@ -137,7 +141,16 @@
             android:layout_margin="@dimen/detailscreen_element_margin"
             android:text="@string/reviews"
             android:textAllCaps="false"
+            android:textColor="#4CAF50"
+            android:textSize="18sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/no_reviews_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8sp"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/details_reviews_recycler_view"

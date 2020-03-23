@@ -29,11 +29,11 @@ public final class MovieDetailsJsonUtils {
 
         Movie[] moviesDetailsArray = new Movie[moviesResultJsonArray.length()];
 
-        for(int i = 0; i < moviesResultJsonArray.length(); i++){
+        for (int i = 0; i < moviesResultJsonArray.length(); i++) {
             String movieId = moviesResultJsonArray.getJSONObject(i).optString(ID);
             String moviePoster = moviesResultJsonArray.getJSONObject(i).optString(POSTER_PATH);
 
-            moviesDetailsArray[i] = new Movie(movieId, POSTER_BASE_URL+POSTER_SIZE+moviePoster);
+            moviesDetailsArray[i] = new Movie(movieId, POSTER_BASE_URL + POSTER_SIZE + moviePoster);
         }
 
         return moviesDetailsArray;
@@ -44,10 +44,6 @@ public final class MovieDetailsJsonUtils {
 
         JSONObject moviesJson = new JSONObject(json);
 
-        JSONArray moviesResultJsonArray = new JSONArray().put(moviesJson);
-
-        //DetailMovie[] moviesDetailsArray = new DetailMovie[moviesResultJsonArray.length()];
-
         String movieTitle = moviesJson.optString(TITLE);
         String moviePoster = moviesJson.optString(POSTER_PATH);
         String movieRelease = moviesJson.optString(RELEASE_DATE);
@@ -55,14 +51,12 @@ public final class MovieDetailsJsonUtils {
         String movieOverview = moviesJson.optString(OVERVIEW);
         String movieDuration = moviesJson.optString(DURATION);
 
-        DetailMovie movie = new DetailMovie(movieTitle,
-                POSTER_BASE_URL+POSTER_SIZE+moviePoster,
+        return new DetailMovie(movieTitle,
+                POSTER_BASE_URL + POSTER_SIZE + moviePoster,
                 movieRelease,
                 movieRate,
                 movieOverview,
                 movieDuration);
-
-        return movie;
     }
 
 }

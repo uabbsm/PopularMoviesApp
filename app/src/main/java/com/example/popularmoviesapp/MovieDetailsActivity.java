@@ -2,6 +2,8 @@ package com.example.popularmoviesapp;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.view.View;
@@ -14,6 +16,8 @@ import butterknife.ButterKnife;
 
 import com.example.popularmoviesapp.models.DetailMovie;
 import com.example.popularmoviesapp.models.Movie;
+import com.example.popularmoviesapp.models.Review;
+import com.example.popularmoviesapp.utilities.ReviewsJsonUtils;
 import com.example.popularmoviesapp.utilities.AsyncTaskCompleteListener;
 import com.example.popularmoviesapp.utilities.FetchAsyncTaskBase;
 import com.example.popularmoviesapp.utilities.MovieDetailsJsonUtils;
@@ -36,6 +40,12 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
     TextView mMovieDescription;
     @BindView(R.id.details_duration_tv)
     TextView mMovieDuration;
+    @BindView(R.id.no_reviews_tv)
+    TextView mNoReviews;
+    @BindView(R.id.details_reviews_recycler_view)
+    RecyclerView mReviewsRecyclerView;
+
+    private ReviewsAdapter mReviewsAdapter;
 
 
     @Override
@@ -51,7 +61,16 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(selectedMovie.getMovieId(), this);
         getMovies.execute();
 
-        //populateUi(selectedMovie);
+        LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
+        mReviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
+        mReviewsRecyclerView.setHasFixedSize(true);
+        mReviewsRecyclerView.setAdapter(mReviewsAdapter);
+
+        loadReviewData(selectedMovie.getMovieId() + "/reviews");
+    }
+
+    private void loadReviewData(String query){
+        new FetchReviewTask().execute(query);
     }
 
     @SuppressLint("SetTextI18n")
@@ -100,5 +119,41 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
     @Override
     public void onTaskComplete(Object movie) {
         populateUi((DetailMovie) movie);
+    }
+
+    public class FetchReviewTask extends AsyncTask<String, Void, Review[]>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Review[] doInBackground(String... params) {
+            if (params.length == 0) { return null; }
+
+            try{
+                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(NetworkUtils.buildUrl(params[0]));
+
+                return ReviewsJsonUtils.getReviewsStringsFromJson(jsonMovieResponse);
+            } catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Review[] reviewData) {
+            if(reviewData != null ) {
+                mReviewsAdapter = new ReviewsAdapter(reviewData);
+                if(mReviewsAdapter.getItemCount() == 0){
+                    mNoReviews.setText(getApplicationContext().getString(R.string.no_reviews));
+                    mNoReviews.setVisibility(View.VISIBLE);
+                }else {
+                    mReviewsRecyclerView.setAdapter(mReviewsAdapter);
+                    mNoReviews.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
     }
 }
