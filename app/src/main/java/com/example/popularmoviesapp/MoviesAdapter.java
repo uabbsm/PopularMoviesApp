@@ -16,15 +16,16 @@ import com.squareup.picasso.Picasso;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
 
     final private MoviesAdapterListItemClickListener mOnClickListener;
-    private Movie[] mNumberItems;
+    private Movie[] mMoviesArray;
 
     public MoviesAdapter(Movie[] numberOfMovies, MoviesAdapterListItemClickListener listener) {
-        mNumberItems = numberOfMovies;
+        mMoviesArray = numberOfMovies;
         mOnClickListener = listener;
     }
 
     @Override
     public MoviesViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.movie_list_item, viewGroup, false);
 
@@ -38,8 +39,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
     @Override
     public int getItemCount() {
-        if (null == mNumberItems) return 0;
-        return mNumberItems.length;
+        if (null == mMoviesArray) return 0;
+        return mMoviesArray.length;
     }
 
     public interface MoviesAdapterListItemClickListener {
@@ -52,12 +53,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
         private MoviesViewHolder(View itemView) {
             super(itemView);
-            mMoviePoster = (ImageView) itemView.findViewById(R.id.iv_movie);
+            mMoviePoster = itemView.findViewById(R.id.iv_movie);
             itemView.setOnClickListener(this);
         }
 
         void bind(int pos) {
-            String imagePath = mNumberItems[pos].getMoviePoster();
+            String imagePath = mMoviesArray[pos].getMoviePoster();
             Picasso.get()
                     .load(imagePath)
                     .placeholder(R.drawable.movie_poster_placeholder_image)
