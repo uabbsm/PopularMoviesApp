@@ -13,11 +13,13 @@ import com.example.popularmoviesapp.models.Trailer;
 
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.TrailersViewHolder> {
 
+    final private TrailersAdapterListItemClickListener mOnClickListener;
     private Trailer[] mTrailersArray;
     private TextView mName;
     private TextView mType;
 
-    public TrailersAdapter(Trailer[] mTrailersArray) {
+    public TrailersAdapter(TrailersAdapterListItemClickListener mOnClickListener, Trailer[] mTrailersArray) {
+        this.mOnClickListener = mOnClickListener;
         this.mTrailersArray = mTrailersArray;
     }
 
@@ -43,13 +45,24 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
         return mTrailersArray.length;
     }
 
-    public class TrailersViewHolder extends RecyclerView.ViewHolder{
+    public interface TrailersAdapterListItemClickListener{
+        void onListItemClick(int item);
+    }
+
+    public class TrailersViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TrailersViewHolder(@NonNull View itemView) {
             super(itemView);
             mName = itemView.findViewById(R.id.iv_trailer_name);
             mType = itemView.findViewById(R.id.iv_trailer_type);
+
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(adapterPosition);
+        }
     }
 }

@@ -4,10 +4,12 @@ public class Trailer {
 
     String name;
     String type;
+    String key;
 
-    public Trailer(String name, String type) {
+    public Trailer(String name, String type, String key) {
         this.name = name;
         this.type = type;
+        this.key = key;
     }
 
     public String getName() {
@@ -16,5 +18,9 @@ public class Trailer {
 
     public String getType() {
         return type;
+    }
+
+    public String getKey(){
+        return key;
     }
 }

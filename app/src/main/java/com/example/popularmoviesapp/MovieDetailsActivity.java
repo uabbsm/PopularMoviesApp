@@ -1,6 +1,10 @@
 package com.example.popularmoviesapp;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
+import android.net.Uri;
+import android.util.Log;
+import android.widget.Toast;
 import android.content.Intent;
 import android.os.AsyncTask;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +31,9 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MovieDetailsActivity extends AppCompatActivity implements AsyncTaskCompleteListener {
+public class MovieDetailsActivity extends AppCompatActivity implements AsyncTaskCompleteListener, TrailersAdapter.TrailersAdapterListItemClickListener {
+
+    public static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
 
     @BindView(R.id.details_poster)
     ImageView mMoviePoster;
@@ -51,6 +57,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
     @BindView(R.id.details_trailers_recycler_view)
     RecyclerView mTrailersRecyclerView;
     private  TrailersAdapter mTrailersAdapter;
+
+    private Trailer[] mTrailerArray;
 
 
     @Override
@@ -138,6 +146,16 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         populateUi((DetailMovie) movie);
     }
 
+    @Override
+    public void onListItemClick(int item) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_BASE_URL + mTrailerArray[item].getKey()));
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Toast.makeText(getApplicationContext(), "There was an error while opening the link", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public class FetchReviewTask extends AsyncTask<String, Void, Review[]> {
         @Override
         protected void onPreExecute() {
@@ -199,11 +217,12 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         @Override
         protected void onPostExecute(Trailer[] trailerData) {
             if (trailerData != null) {
-                mTrailersAdapter = new TrailersAdapter(trailerData);
+                mTrailersAdapter = new TrailersAdapter(MovieDetailsActivity.this, trailerData);
                 if(mTrailersAdapter.getItemCount() == 0){
                     mNoTrailers.setText(getApplicationContext().getString(R.string.no_trailers));
                     mNoTrailers.setVisibility(View.VISIBLE);
                 }else{
+                    mTrailerArray = trailerData;
                     mTrailersRecyclerView.setAdapter(mTrailersAdapter);
                     mNoTrailers.setVisibility(View.GONE);
                 }
