@@ -7,4 +7,5 @@
     <dimen name="detailscreen_element_margin">10dp</dimen>
     <dimen name="detailsceen_title_padding_left">20dp</dimen>
     <dimen name="detailsceen_title_text_size">30sp</dimen>
+    <dimen name="twoHundredSp">200sp</dimen>
 </resources>

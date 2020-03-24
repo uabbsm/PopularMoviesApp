@@ -11,7 +11,10 @@ import java.util.List;
 public interface TaskDao {
 
     @Query("SELECT * FROM favorite_movies ORDER BY movie_release")
-    List<FavoriteMovie> loadAllFavoriteMovies();
+    FavoriteMovie[] loadAllFavoriteMovies();
+
+    @Query("SELECT * FROM favorite_movies WHERE id = :id")
+    FavoriteMovie loadMovie(String id);
 
     @Insert
     void addFavoriteMovie(FavoriteMovie movie);

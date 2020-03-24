@@ -15,11 +15,16 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 import android.os.Parcelable;
 
+import com.example.popularmoviesapp.database.AppDatabase;
+import com.example.popularmoviesapp.database.FavoriteMovie;
 import com.example.popularmoviesapp.adapters.MoviesAdapter;
 import com.example.popularmoviesapp.databinding.ActivityMainBinding;
 import com.example.popularmoviesapp.models.Movie;
 import com.example.popularmoviesapp.utilities.AsyncTaskCompleteListener;
 import com.example.popularmoviesapp.utilities.FetchAsyncTaskBase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity
@@ -31,19 +36,20 @@ public class MainActivity extends AppCompatActivity
     private static Bundle mBundleRecyclerViewState;
     private Movie[] mMovies;
 
-    String query = "popular";
-    private final String KEY_RECYCLER_STATE = "recycler";
-    public static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
-
-    private  MoviesAdapter mMoviesAdapter;
+    private MoviesAdapter mMoviesAdapter;
 
     ActivityMainBinding mMainBinding;
 
+    private AppDatabase mDb;
+
+    String query = "popular";
+    private final String KEY_RECYCLER_STATE = "recycler_state";
+    public static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
         }
         mMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
@@ -56,14 +62,6 @@ public class MainActivity extends AppCompatActivity
         mMainBinding.recyclerViewMovies.setAdapter(mMoviesAdapter);
 
         loadMovieData(query);
-    }
-
-    private void loadMovieData(String query){
-        mMainBinding.progressBar.setVisibility(View.VISIBLE);
-        showMoviesList();
-
-        FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(query, this);
-        getMovies.execute();
     }
 
     @Override
@@ -86,12 +84,39 @@ public class MainActivity extends AppCompatActivity
         if(id == R.id.sort_most_popular){
             query = POPULAR_QUERY;
             loadMovieData(POPULAR_QUERY);
-        }else{
+        }else if (id == R.id.sort_highest_rated) {
             query = TOP_RATED_QUERY;
             loadMovieData(TOP_RATED_QUERY);
+        }else{
+            loadFavoritePostersToGrid();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTaskComplete(Object movies) {
+        loadPostersToGrid((Movie[]) movies);
+    }
+
+
+    // Helper methods
+
+    private void loadMovieData(String query){
+        mMainBinding.progressBar.setVisibility(View.VISIBLE);
+        showMoviesList();
+
+        FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(query, this);
+        getMovies.execute();
+    }
+
+    private void loadFavoritePostersToGrid() {
+        mDb = AppDatabase.getInstance(getApplicationContext());
+        FavoriteMovie[] favoriteMoviesArray = mDb.taskDao().loadAllFavoriteMovies();
+        List<Movie> moviesList = new ArrayList<>();
+        for (int i = 0; favoriteMoviesArray.length -1 > i; i++)
+            moviesList.add(new Movie(null, favoriteMoviesArray[i].getMoviePoster()));
+        loadPostersToGrid(moviesList.toArray(new Movie[0]));
     }
 
     private void showMoviesList() {
@@ -100,8 +125,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showErrorMessage() {
-        mMainBinding.tvErrorMessageDisplay.setVisibility(View.VISIBLE);
         mMainBinding.recyclerViewMovies.setVisibility(View.INVISIBLE);
+        mMainBinding.tvErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
     // Following this thread: https://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns
@@ -112,33 +137,28 @@ public class MainActivity extends AppCompatActivity
         return (int) (dpWidth / 180);
     }
 
-    @Override
-    public void onTaskComplete(Object movies) {
+    private void loadPostersToGrid(Movie[] movies) {
         mMainBinding.progressBar.setVisibility(View.INVISIBLE);
         if (movies != null) {
             showMoviesList();
-            mMoviesAdapter = new MoviesAdapter((Movie[]) movies, MainActivity.this);
+            mMoviesAdapter = new MoviesAdapter(movies, MainActivity.this);
             mMainBinding.recyclerViewMovies.setAdapter(mMoviesAdapter);
-            mMovies = (Movie[]) movies;
+            mMovies = movies;
         } else {
             showErrorMessage();
         }
     }
 
-    //LifeCycle Mewthod's
 
-    /**
-     *
-     *
-     * @param savedInstanceState
-     */
+    //Lifecycle methods
+
     @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
         query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         String lifecycleSortBy = query;
         outState.putString(LIFECYCLE_CALLBACKS_TEXT_KEY, lifecycleSortBy);
         super.onSaveInstanceState(outState);
@@ -155,9 +175,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if(mBundleRecyclerViewState != null){
+        if (mBundleRecyclerViewState != null) {
             Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
             mMainBinding.recyclerViewMovies.getLayoutManager().onRestoreInstanceState(listState);
         }
     }
+
 }
