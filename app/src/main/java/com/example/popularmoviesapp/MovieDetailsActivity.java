@@ -6,15 +6,15 @@ import android.net.Uri;
 import android.widget.Toast;
 import android.content.Intent;
 import android.os.AsyncTask;
+
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.popularmoviesapp.adapters.ReviewsAdapter;
+import com.example.popularmoviesapp.databinding.ActivityDetailsBinding;
 import com.example.popularmoviesapp.models.DetailMovie;
 import com.example.popularmoviesapp.models.Movie;
 import com.example.popularmoviesapp.models.Review;
@@ -26,51 +26,32 @@ import com.example.popularmoviesapp.utilities.BaseJsonUtils;
 import com.example.popularmoviesapp.adapters.TrailersAdapter;
 import com.squareup.picasso.Picasso;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class MovieDetailsActivity extends AppCompatActivity implements AsyncTaskCompleteListener, TrailersAdapter.TrailersAdapterListItemClickListener {
 
     public static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
 
-    @BindView(R.id.details_poster)
-    ImageView mMoviePoster;
-    @BindView(R.id.details_movie_title_tv)
-    TextView mMovieTitle;
-    @BindView(R.id.details_year_tv)
-    TextView mMovieYear;
-    @BindView(R.id.details_rating_tv)
-    TextView mMovieRating;
-    @BindView(R.id.details_description_tv)
-    TextView mMovieDescription;
-    @BindView(R.id.details_duration_tv)
-    TextView mMovieDuration;
-    @BindView(R.id.no_reviews_tv)
-    TextView mNoReviews;
-    @BindView(R.id.no_trailers_tv)
-    TextView mNoTrailers;
-    @BindView(R.id.details_reviews_recycler_view)
-    RecyclerView mReviewsRecyclerView;
     private ReviewsAdapter mReviewsAdapter;
-    @BindView(R.id.details_trailers_recycler_view)
-    RecyclerView mTrailersRecyclerView;
     private  TrailersAdapter mTrailersAdapter;
 
     private Trailer[] mTrailerArray;
 
+    private ActivityDetailsBinding mDetailsBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
-
-        ButterKnife.bind(this);
+        mDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_details);
 
         Intent intent = getIntent();
         Movie selectedMovie = intent.getParcelableExtra("Movie"); // Receive the Movie object as Parcelable
 
         FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(selectedMovie.getMovieId(), this);
         getMovies.execute();
+
+        mDetailsBinding.progressBarDetails.setVisibility(View.VISIBLE);
+        mDetailsBinding.detailsLayout.setVisibility(View.INVISIBLE);
+        getSupportActionBar().hide();
 
         loadReviewData(selectedMovie.getMovieId() + "/reviews");
         loadTrailerData(selectedMovie.getMovieId() + "/videos");
@@ -79,9 +60,9 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
     private void loadReviewData(String query){
 
         LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
-        mReviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
-        mReviewsRecyclerView.setHasFixedSize(true);
-        mReviewsRecyclerView.setAdapter(mReviewsAdapter);
+        mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
+        mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setHasFixedSize(true);
+        mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setAdapter(mReviewsAdapter);
 
         new FetchReviewTask().execute(query);
     }
@@ -89,9 +70,9 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
     private void loadTrailerData(String query){
 
         LinearLayoutManager trailersLayoutManager = new LinearLayoutManager(this);
-        mTrailersRecyclerView.setLayoutManager(trailersLayoutManager);
-        mTrailersRecyclerView.setHasFixedSize(true);
-        mTrailersRecyclerView.setAdapter(mTrailersAdapter);
+        mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setLayoutManager(trailersLayoutManager);
+        mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setHasFixedSize(true);
+        mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setAdapter(mTrailersAdapter);
 
         new FetchTrailerTask().execute(query);
     }
@@ -102,45 +83,47 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         String notAvailable = "N/A";
 
         if(movie.getMovieTitle() != null && !(movie.getMovieTitle().equals(""))){
-            mMovieTitle.setText(movie.getMovieTitle());
+            mDetailsBinding.detailsMovieTitleTv.setText(movie.getMovieTitle());
         }else{
-            mMovieTitle.setText(notAvailable);
+            mDetailsBinding.detailsMovieTitleTv.setText(notAvailable);
         }
 
         if(movie.getMovieRelease() != null && !(movie.getMovieRelease().equals(""))){
             // substring to get the 4 first characters of the string. The year
-            mMovieYear.setText(movie.getMovieRelease().substring(0, 4));
+            mDetailsBinding.movieDetailsLayout.detailsYearTv.setText(movie.getMovieRelease().substring(0, 4));
         }else{
-            mMovieYear.setText(notAvailable);
+            mDetailsBinding.movieDetailsLayout.detailsYearTv.setText(notAvailable);
         }
 
         if(movie.getMovieRate() != null && !(movie.getMovieRate().equals(""))){
-            mMovieRating.setText(movie.getMovieRate() + "/10");
+            mDetailsBinding.movieDetailsLayout.detailsRatingTv.setText(movie.getMovieRate() + "/10");
         }else{
-            mMovieRating.setText(notAvailable);
+            mDetailsBinding.movieDetailsLayout.detailsRatingTv.setText(notAvailable);
         }
 
         if(movie.getMovieOverview() != null && !(movie.getMovieOverview().equals(""))){
-            mMovieDescription.setText(movie.getMovieOverview());
+            mDetailsBinding.movieDetailsLayout.detailsDescriptionTv.setText(movie.getMovieOverview());
         }else{
-            mMovieDescription.setText(notAvailable);
+            mDetailsBinding.movieDetailsLayout.detailsDescriptionTv.setText(notAvailable);
         }
 
         if(movie.getMovieDuration() != null && !(movie.getMovieDuration().equals(""))){
-            mMovieDuration.setText(movie.getMovieDuration() + " min");
+            mDetailsBinding.movieDetailsLayout.detailsDurationTv.setText(movie.getMovieDuration() + " min");
         }else{
-            mMovieDuration.setText(notAvailable);
+            mDetailsBinding.movieDetailsLayout.detailsDurationTv.setText(notAvailable);
         }
 
         Picasso.get()
                 .load(movie.getMoviePoster())
                 .placeholder(R.drawable.movie_poster_placeholder_image)
                 .error(R.drawable.not_found_poster_image)
-                .into(mMoviePoster);
+                .into(mDetailsBinding.movieDetailsLayout.detailsPoster);
     }
 
     @Override
     public void onTaskComplete(Object movie) {
+        mDetailsBinding.progressBarDetails.setVisibility(View.INVISIBLE);
+        mDetailsBinding.detailsLayout.setVisibility(View.VISIBLE);
         populateUi((DetailMovie) movie);
     }
 
@@ -180,11 +163,11 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
             if (reviewData != null) {
                 mReviewsAdapter = new ReviewsAdapter(reviewData);
                 if(mReviewsAdapter.getItemCount() == 0){
-                    mNoReviews.setText(getApplicationContext().getString(R.string.no_reviews));
-                    mNoReviews.setVisibility(View.VISIBLE);
+                    mDetailsBinding.reviewsRecyclerviewLayout.noReviewsTv.setText(getApplicationContext().getString(R.string.no_reviews));
+                    mDetailsBinding.reviewsRecyclerviewLayout.noReviewsTv.setVisibility(View.VISIBLE);
                 }else{
-                    mReviewsRecyclerView.setAdapter(mReviewsAdapter);
-                    mNoReviews.setVisibility(View.GONE);
+                    mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setAdapter(mReviewsAdapter);
+                    mDetailsBinding.reviewsRecyclerviewLayout.noReviewsTv.setVisibility(View.GONE);
                 }
             }
         }
@@ -217,12 +200,12 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
             if (trailerData != null) {
                 mTrailersAdapter = new TrailersAdapter(MovieDetailsActivity.this, trailerData);
                 if(mTrailersAdapter.getItemCount() == 0){
-                    mNoTrailers.setText(getApplicationContext().getString(R.string.no_trailers));
-                    mNoTrailers.setVisibility(View.VISIBLE);
+                    mDetailsBinding.trailersRecyclerviewLayout.noTrailersTv.setText(getApplicationContext().getString(R.string.no_trailers));
+                    mDetailsBinding.trailersRecyclerviewLayout.noTrailersTv.setVisibility(View.VISIBLE);
                 }else{
                     mTrailerArray = trailerData;
-                    mTrailersRecyclerView.setAdapter(mTrailersAdapter);
-                    mNoTrailers.setVisibility(View.GONE);
+                    mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setAdapter(mTrailersAdapter);
+                    mDetailsBinding.trailersRecyclerviewLayout.noTrailersTv.setVisibility(View.GONE);
                 }
             }
         }
