@@ -45,12 +45,15 @@ public class MainActivity extends AppCompatActivity
     String query = "popular";
     private final String KEY_RECYCLER_STATE = "recycler_state";
     public static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
+    private boolean favorites_flag = false;
+    private String LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG = "favorite_selected";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
+            favorites_flag = savedInstanceState.getBoolean(LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG);
         }
         mMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
@@ -61,7 +64,9 @@ public class MainActivity extends AppCompatActivity
 
         mMainBinding.recyclerViewMovies.setAdapter(mMoviesAdapter);
 
-        loadMovieData(query);
+        if (!favorites_flag) {
+            loadMovieData(query);
+        }
     }
 
     @Override
@@ -81,16 +86,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.sort_most_popular){
-            query = POPULAR_QUERY;
-            loadMovieData(POPULAR_QUERY);
-        }else if (id == R.id.sort_highest_rated) {
-            query = TOP_RATED_QUERY;
-            loadMovieData(TOP_RATED_QUERY);
-        }else{
-            loadFavoritePostersToGrid();
+        switch (id) {
+            case R.id.sort_most_popular:
+                query = POPULAR_QUERY;
+                favorites_flag = false;
+                loadMovieData(POPULAR_QUERY);
+                break;
+            case R.id.sort_highest_rated:
+                query = TOP_RATED_QUERY;
+                favorites_flag = false;
+                loadMovieData(TOP_RATED_QUERY);
+                break;
+            default:
+                loadFavoritePostersToGrid();
+                favorites_flag = true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -102,7 +112,7 @@ public class MainActivity extends AppCompatActivity
 
     // Helper methods
 
-    private void loadMovieData(String query){
+    private void loadMovieData(String query) {
         mMainBinding.progressBar.setVisibility(View.VISIBLE);
         showMoviesList();
 
@@ -114,8 +124,8 @@ public class MainActivity extends AppCompatActivity
         mDb = AppDatabase.getInstance(getApplicationContext());
         FavoriteMovie[] favoriteMoviesArray = mDb.taskDao().loadAllFavoriteMovies();
         List<Movie> moviesList = new ArrayList<>();
-        for (int i = 0; favoriteMoviesArray.length -1 > i; i++)
-            moviesList.add(new Movie(null, favoriteMoviesArray[i].getMoviePoster()));
+        for (FavoriteMovie favoriteMovie : favoriteMoviesArray)
+            moviesList.add(new Movie(String.valueOf(favoriteMovie.getId()), favoriteMovie.getMoviePoster()));
         loadPostersToGrid(moviesList.toArray(new Movie[0]));
     }
 
@@ -155,12 +165,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
+        favorites_flag = savedInstanceState.getBoolean(LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         String lifecycleSortBy = query;
         outState.putString(LIFECYCLE_CALLBACKS_TEXT_KEY, lifecycleSortBy);
+        outState.putBoolean(LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG, favorites_flag);
         super.onSaveInstanceState(outState);
     }
 
@@ -169,6 +181,7 @@ public class MainActivity extends AppCompatActivity
         mBundleRecyclerViewState = new Bundle();
         Parcelable listState = mMainBinding.recyclerViewMovies.getLayoutManager().onSaveInstanceState();
         mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+        mBundleRecyclerViewState.putBoolean(LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG, favorites_flag);
         super.onPause();
     }
 
@@ -176,8 +189,12 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         if (mBundleRecyclerViewState != null) {
-            Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
-            mMainBinding.recyclerViewMovies.getLayoutManager().onRestoreInstanceState(listState);
+            if (mBundleRecyclerViewState.getBoolean(LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG)) {
+                loadFavoritePostersToGrid();
+            } else {
+                Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
+                mMainBinding.recyclerViewMovies.getLayoutManager().onRestoreInstanceState(listState);
+            }
         }
     }
 
