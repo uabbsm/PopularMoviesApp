@@ -8,16 +8,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.popularmoviesapp.adapters.ReviewsAdapter;
 import com.example.popularmoviesapp.databinding.ActivityDetailsBinding;
@@ -32,8 +26,6 @@ import com.example.popularmoviesapp.utilities.BaseJsonUtils;
 import com.example.popularmoviesapp.adapters.TrailersAdapter;
 import com.squareup.picasso.Picasso;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class MovieDetailsActivity extends AppCompatActivity implements AsyncTaskCompleteListener, TrailersAdapter.TrailersAdapterListItemClickListener {
 
@@ -59,6 +51,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
 
         mDetailsBinding.progressBarDetails.setVisibility(View.VISIBLE);
         mDetailsBinding.detailsLayout.setVisibility(View.INVISIBLE);
+        getSupportActionBar().hide();
 
         loadReviewData(selectedMovie.getMovieId() + "/reviews");
         loadTrailerData(selectedMovie.getMovieId() + "/videos");

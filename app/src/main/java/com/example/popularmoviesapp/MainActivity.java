@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,14 +11,9 @@ import android.view.MenuInflater;
 import android.content.Intent;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.os.Parcelable;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 import com.example.popularmoviesapp.adapters.MoviesAdapter;
 import com.example.popularmoviesapp.databinding.ActivityMainBinding;
@@ -53,8 +47,6 @@ public class MainActivity extends AppCompatActivity
             query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
         }
         mMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-
-        ButterKnife.bind(this);
 
         GridLayoutManager LayoutManager = new GridLayoutManager(this, calculateNoOfColumns(this));
 
