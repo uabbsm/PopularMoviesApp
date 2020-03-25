@@ -4,9 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
+        android:id="@+id/trailers_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <View
+            android:id="@+id/details_screen_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="@dimen/detailscreen_element_margin"
+            android:background="@android:color/background_dark" />
 
         <TextView
             android:id="@+id/details_trailer_label"

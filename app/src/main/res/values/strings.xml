@@ -22,4 +22,8 @@
     <string name="name_video">Name</string>
     <string name="type_video">Type</string>
     <string name="no_trailers">No</string>
+
+    <string name="error_load_video">There was an error while opening the video!!</string>
+
+    <string name="no_favorites_yet">No Favorite movies!</string>
 </resources>

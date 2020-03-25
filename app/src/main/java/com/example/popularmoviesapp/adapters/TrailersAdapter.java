@@ -11,6 +11,9 @@ import android.widget.TextView;
 import com.example.popularmoviesapp.R;
 import com.example.popularmoviesapp.models.Trailer;
 
+/**
+ * Exposes the list of the trailers
+ */
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.TrailersViewHolder> {
 
     final private TrailersAdapterListItemClickListener mOnClickListener;
@@ -23,6 +26,12 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
         this.mTrailersArray = mTrailersArray;
     }
 
+    /**
+     * inflates the list of the video (trailers)
+     * @param viewGroup
+     * @param i
+     * @return
+     */
     @NonNull
     @Override
     public TrailersViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -39,6 +48,10 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
         mType.setText(mTrailersArray[position].getType());
     }
 
+    /**
+     * counts the number os item in the array
+     * @return
+     */
     @Override
     public int getItemCount() {
         if (null == mTrailersArray) return 0;

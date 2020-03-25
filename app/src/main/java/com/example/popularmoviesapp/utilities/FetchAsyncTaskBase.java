@@ -7,9 +7,11 @@ import com.example.popularmoviesapp.models.Movie;
 
 import java.net.URL;
 
-// Created a generic AsyncTask class. According toi this thread:
-// https://stackoverflow.com/questions/24773574/android-generic-asynctask-class
-
+/**
+ * Created a generic AsyncTask class.
+ * Got the idea by searching:
+ * https://stackoverflow.com/questions/24773574/android-generic-asynctask-class
+ */
 public class FetchAsyncTaskBase extends AsyncTask<Void, Void, Void> {
 
     private AsyncTaskCompleteListener callback;
@@ -27,6 +29,11 @@ public class FetchAsyncTaskBase extends AsyncTask<Void, Void, Void> {
         super.onPreExecute();
     }
 
+    /**
+     * Will build the url here
+     * @param voids
+     * @return
+     */
     @Override
     protected Void doInBackground(Void... voids) {
 

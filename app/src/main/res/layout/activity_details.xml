@@ -1,101 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progressBarDetails"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_gravity="center"
-                android:layout_height="wrap_content"
-                android:visibility="invisible" />
+            <include
+                android:id="@+id/movie_details_layout"
+                layout="@layout/movie_details_view" />
 
-            <LinearLayout
-                android:id="@+id/details_layout"
+            <include
+                android:id="@+id/trailers_recyclerview_layout"
+                layout="@layout/trailers_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:layout_height="@dimen/zeroDp"
+                android:layout_weight="1" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#009688"
-                    android:orientation="horizontal">
+            <include
+                android:id="@+id/reviews_recyclerview_layout"
+                layout="@layout/reviews_recycler_view"/>
 
-                    <TextView
-                        android:id="@+id/details_movie_title_tv"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/movie_title_height"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:paddingLeft="@dimen/detailsceen_title_padding_left"
-                        android:paddingStart="@dimen/detailsceen_title_padding_left"
-                        android:shadowColor="@android:color/black"
-                        android:shadowDx="-2"
-                        android:shadowDy="-2"
-                        android:shadowRadius="1"
-                        android:text="@string/movie_name"
-                        android:textColor="@android:color/white"
-                        android:textSize="@dimen/detailsceen_title_text_size"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/details_favorite_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="6"
-                        app:srcCompat="@drawable/unselected_favourite" />
-                </LinearLayout>
-
-                <include
-                    android:id="@+id/movie_details_layout"
-                    layout="@layout/movie_details_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <View
-                    android:id="@+id/details_screen_divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_margin="@dimen/detailscreen_element_margin"
-                    android:background="@android:color/background_dark" />
-
-                <include
-                    android:id="@+id/trailers_recyclerview_layout"
-                    layout="@layout/trailers_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <View
-                    android:id="@+id/details_screen_divider2"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_margin="@dimen/detailscreen_element_margin"
-                    android:background="@android:color/background_dark" />
-
-                <include
-                    android:id="@+id/reviews_recyclerview_layout"
-                    layout="@layout/reviews_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-            </LinearLayout>
-
-        </FrameLayout>
-
-
-
+        </LinearLayout>
     </ScrollView>
+
 </layout>
