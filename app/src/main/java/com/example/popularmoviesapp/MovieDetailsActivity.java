@@ -35,20 +35,22 @@ import com.example.popularmoviesapp.adapters.TrailersAdapter;
 import com.squareup.picasso.Picasso;
 
 
-public class MovieDetailsActivity extends AppCompatActivity implements AsyncTaskCompleteListener, TrailersAdapter.TrailersAdapterListItemClickListener {
+public class MovieDetailsActivity extends AppCompatActivity
+        implements AsyncTaskCompleteListener, TrailersAdapter.TrailersAdapterListItemClickListener {
 
     public static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
+    private AppDatabase mDb;
+
+    private String movie_id;
 
     private ReviewsAdapter mReviewsAdapter;
-    private  TrailersAdapter mTrailersAdapter;
+
+    private TrailersAdapter mTrailersAdapter;
 
     private Trailer[] mTrailerArray;
 
     private ActivityDetailsBinding mDetailsBinding;
 
-    private AppDatabase mDb;
-
-    private String movie_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,54 +66,6 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         mDb = AppDatabase.getInstance(getApplicationContext());
         checkMovieInTheDb(movie_id);
 
-    }
-
-    private void checkMovieInTheDb(final String id){
-
-        mDetailsBinding.movieDetailsLayout.progressBarDetails.setVisibility(View.VISIBLE);
-        mDetailsBinding.movieDetailsLayout.detailsLayout.setVisibility(View.INVISIBLE);
-
-        final LiveData<FavoriteMovie> favoriteMovieLiveData = mDb.taskDao().loadMovie(id);
-        favoriteMovieLiveData.observe(this, new Observer<FavoriteMovie>() {
-            @Override
-            public void onChanged(@Nullable FavoriteMovie favoriteMovie) {
-
-                if (favoriteMovie != null){
-                    mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.selected_favourite);
-                    populateUi(new DetailMovie(
-                            favoriteMovie.getMovieTitle(),
-                            favoriteMovie.getMoviePoster(),
-                            favoriteMovie.getMovieRelease(),
-                            favoriteMovie.getMovieRate(),
-                            favoriteMovie.getMovieOverview(),
-                            favoriteMovie.getMovieDuration()));
-                }else{
-                    mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.unselected_favourite);
-                    FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(id, MovieDetailsActivity.this);
-                    getMovies.execute();
-                }
-            }
-        });
-    }
-
-    private void loadReviewData(String query){
-
-        LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
-        mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
-        mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setHasFixedSize(true);
-        mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setAdapter(mReviewsAdapter);
-
-        new FetchReviewTask().execute(query);
-    }
-
-    private void loadTrailerData(String query){
-
-        LinearLayoutManager trailersLayoutManager = new LinearLayoutManager(this);
-        mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setLayoutManager(trailersLayoutManager);
-        mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setHasFixedSize(true);
-        mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setAdapter(mTrailersAdapter);
-
-        new FetchTrailerTask().execute(query);
     }
 
     @SuppressLint("SetTextI18n")
@@ -161,8 +115,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         loadReviewData(movie_id + "/reviews");
         loadTrailerData(movie_id + "/videos");
 
-        mDetailsBinding.movieDetailsLayout.progressBarDetails.setVisibility(View.INVISIBLE);
-        mDetailsBinding.movieDetailsLayout.detailsLayout.setVisibility(View.VISIBLE);
+        displayData();
     }
 
     @Override
@@ -178,6 +131,56 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         } catch (ActivityNotFoundException ex) {
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.error_load_video), Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+    // Helper methods
+
+    private void checkMovieInTheDb(final String id){
+
+        loadingData();
+
+        final LiveData<FavoriteMovie> favoriteMovieLiveData = mDb.taskDao().loadMovie(id);
+        favoriteMovieLiveData.observe(this, new Observer<FavoriteMovie>() {
+            @Override
+            public void onChanged(@Nullable FavoriteMovie favoriteMovie) {
+
+                if (favoriteMovie != null){
+                    mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.selected_favourite);
+                    populateUi(new DetailMovie(
+                            favoriteMovie.getMovieTitle(),
+                            favoriteMovie.getMoviePoster(),
+                            favoriteMovie.getMovieRelease(),
+                            favoriteMovie.getMovieRate(),
+                            favoriteMovie.getMovieOverview(),
+                            favoriteMovie.getMovieDuration()));
+                }else{
+                    mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.unselected_favourite);
+                    FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(id, MovieDetailsActivity.this);
+                    getMovies.execute();
+                }
+            }
+        });
+    }
+
+    private void loadReviewData(String query){
+
+        LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
+        mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
+        mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setHasFixedSize(true);
+        mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setAdapter(mReviewsAdapter);
+
+        new FetchReviewTask().execute(query);
+    }
+
+    private void loadTrailerData(String query){
+
+        LinearLayoutManager trailersLayoutManager = new LinearLayoutManager(this);
+        mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setLayoutManager(trailersLayoutManager);
+        mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setHasFixedSize(true);
+        mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setAdapter(mTrailersAdapter);
+
+        new FetchTrailerTask().execute(query);
     }
 
     public void onFavoriteStarClicked(View view){
@@ -221,6 +224,23 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
             }
         });
     }
+
+    private void loadingData() {
+        mDetailsBinding.movieDetailsLayout.progressBarDetails.setVisibility(View.VISIBLE);
+        mDetailsBinding.movieDetailsLayout.detailsLayout.setVisibility(View.INVISIBLE);
+        mDetailsBinding.reviewsRecyclerviewLayout.reviewsLayout.setVisibility(View.GONE);
+        mDetailsBinding.trailersRecyclerviewLayout.trailersLayout.setVisibility(View.GONE);
+    }
+
+    private void displayData() {
+        mDetailsBinding.movieDetailsLayout.progressBarDetails.setVisibility(View.INVISIBLE);
+        mDetailsBinding.movieDetailsLayout.detailsLayout.setVisibility(View.VISIBLE);
+        mDetailsBinding.reviewsRecyclerviewLayout.reviewsLayout.setVisibility(View.VISIBLE);
+        mDetailsBinding.trailersRecyclerviewLayout.trailersLayout.setVisibility(View.VISIBLE);
+    }
+
+
+    // Inner classes
 
     public class FetchReviewTask extends AsyncTask<String, Void, Review[]> {
         @Override
@@ -296,5 +316,4 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         }
 
     }
-
 }

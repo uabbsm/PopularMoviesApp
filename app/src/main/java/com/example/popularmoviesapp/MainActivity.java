@@ -34,21 +34,26 @@ public class MainActivity extends AppCompatActivity
         implements MoviesAdapter.MoviesAdapterListItemClickListener, AsyncTaskCompleteListener {
 
     public static final String POPULAR_QUERY = "popular";
+
     public static final String TOP_RATED_QUERY = "top_rated";
 
+    private static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
+
+    private final String KEY_RECYCLER_STATE = "recycler_state";
+
+    private String LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG = "favorite_selected";
+
+    private AppDatabase mDb;
+
+    String query = "popular";
+
     private static Bundle mBundleRecyclerViewState;
+
     private Movie[] mMovies;
 
     private MoviesAdapter mMoviesAdapter;
 
     ActivityMainBinding mMainBinding;
-
-    private AppDatabase mDb;
-
-    String query = "popular";
-    private final String KEY_RECYCLER_STATE = "recycler_state";
-    private String LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG = "favorite_selected";
-    private static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
 
     private boolean favorites_flag = false; // a flag to track whether sorting as favorites has been selected or not
 
@@ -114,64 +119,6 @@ public class MainActivity extends AppCompatActivity
         loadPostersToGrid((Movie[]) movies);
     }
 
-
-    // Helper methods
-
-    private void loadMovieData(String query){
-        mMainBinding.progressBar.setVisibility(View.VISIBLE);
-        showMoviesList();
-
-        FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(query, this);
-        getMovies.execute();
-    }
-
-    private void loadFavoritePostersToGrid() {
-        mDb = AppDatabase.getInstance(getApplicationContext());
-        final LiveData<FavoriteMovie[]> favoriteMovieLiveData = mDb.taskDao().loadAllFavoriteMovies();
-        favoriteMovieLiveData.observe(this, new Observer<FavoriteMovie[]>() {
-            @Override
-            public void onChanged(@Nullable FavoriteMovie[] favoriteMovie) {
-                List<Movie> moviesList = new ArrayList<>();
-                for (FavoriteMovie favMovie : favoriteMovie)
-                    moviesList.add(new Movie(String.valueOf(favMovie.getId()), favMovie.getMoviePoster()));
-                loadPostersToGrid(moviesList.toArray(new Movie[0]));
-            }
-        });
-    }
-
-    private void showMoviesList() {
-        mMainBinding.tvErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        mMainBinding.recyclerViewMovies.setVisibility(View.VISIBLE);
-    }
-
-    private void showErrorMessage() {
-        mMainBinding.recyclerViewMovies.setVisibility(View.INVISIBLE);
-        mMainBinding.tvErrorMessageDisplay.setVisibility(View.VISIBLE);
-    }
-
-    // Following this thread: https://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns
-    // The best way to calculate the number of the columns that will be displayed
-    public static int calculateNoOfColumns(Context context) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        return (int) (dpWidth / 180);
-    }
-
-    private void loadPostersToGrid(Movie[] movies) {
-        mMainBinding.progressBar.setVisibility(View.INVISIBLE);
-        if (movies != null) {
-            showMoviesList();
-            mMoviesAdapter = new MoviesAdapter(movies, MainActivity.this);
-            mMainBinding.recyclerViewMovies.setAdapter(mMoviesAdapter);
-            mMovies = movies;
-        } else {
-            showErrorMessage();
-        }
-    }
-
-
-    //Lifecycle methods
-
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
@@ -208,5 +155,73 @@ public class MainActivity extends AppCompatActivity
 
         }
     }
+
+
+    // Helper methods
+
+    private void loadMovieData(String query){
+        mMainBinding.progressBar.setVisibility(View.VISIBLE);
+        showMoviesList();
+
+        FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(query, this);
+        getMovies.execute();
+    }
+
+    private void loadFavoritePostersToGrid() {
+        mDb = AppDatabase.getInstance(getApplicationContext());
+        final LiveData<FavoriteMovie[]> favoriteMovieLiveData = mDb.taskDao().loadAllFavoriteMovies();
+        favoriteMovieLiveData.observe(this, new Observer<FavoriteMovie[]>() {
+            @Override
+            public void onChanged(@Nullable FavoriteMovie[] favoriteMovie) {
+                List<Movie> moviesList = new ArrayList<>();
+                for (FavoriteMovie favMovie : favoriteMovie)
+                    moviesList.add(new Movie(String.valueOf(favMovie.getId()), favMovie.getMoviePoster()));
+                loadPostersToGrid(moviesList.toArray(new Movie[0]));
+            }
+        });
+    }
+
+    private void showMoviesList() {
+        mMainBinding.tvErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mMainBinding.recyclerViewMovies.setVisibility(View.VISIBLE);
+    }
+
+    private void showErrorMessage() {
+        mMainBinding.recyclerViewMovies.setVisibility(View.INVISIBLE);
+        mMainBinding.tvErrorMessageDisplay.setText(getString(R.string.error_message));
+        mMainBinding.tvErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    private void showNoFavorites() {
+        mMainBinding.tvErrorMessageDisplay.setText(getString(R.string.no_favorites_yet));
+        mMainBinding.recyclerViewMovies.setVisibility(View.INVISIBLE);
+        mMainBinding.tvErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    // Following this thread: https://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns
+    // The best way to calculate the number of the columns that will be displayed
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        return (int) (dpWidth / 180);
+    }
+
+    private void loadPostersToGrid(Movie[] movies) {
+        mMainBinding.progressBar.setVisibility(View.INVISIBLE);
+        if (movies != null) {
+            if (movies.length == 0) {
+                showNoFavorites();
+            }else{
+                showMoviesList();
+                mMoviesAdapter = new MoviesAdapter(movies, MainActivity.this);
+                mMainBinding.recyclerViewMovies.setAdapter(mMoviesAdapter);
+                mMovies = movies;
+            }
+
+        } else {
+            showErrorMessage();
+        }
+    }
+
 
 }
