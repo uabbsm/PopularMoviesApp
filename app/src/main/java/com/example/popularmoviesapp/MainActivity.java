@@ -1,8 +1,11 @@
 package com.example.popularmoviesapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.os.Bundle;
@@ -44,9 +47,10 @@ public class MainActivity extends AppCompatActivity
 
     String query = "popular";
     private final String KEY_RECYCLER_STATE = "recycler_state";
-    public static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
-    private boolean favorites_flag = false;
     private String LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG = "favorite_selected";
+    private static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
+
+    private boolean favorites_flag = false; // a flag to track whether sorting as favorites has been selected or not
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +68,7 @@ public class MainActivity extends AppCompatActivity
 
         mMainBinding.recyclerViewMovies.setAdapter(mMoviesAdapter);
 
-        if (!favorites_flag) {
+        if(!favorites_flag){
             loadMovieData(query);
         }
     }
@@ -101,6 +105,7 @@ public class MainActivity extends AppCompatActivity
                 loadFavoritePostersToGrid();
                 favorites_flag = true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -112,7 +117,7 @@ public class MainActivity extends AppCompatActivity
 
     // Helper methods
 
-    private void loadMovieData(String query) {
+    private void loadMovieData(String query){
         mMainBinding.progressBar.setVisibility(View.VISIBLE);
         showMoviesList();
 
@@ -122,11 +127,16 @@ public class MainActivity extends AppCompatActivity
 
     private void loadFavoritePostersToGrid() {
         mDb = AppDatabase.getInstance(getApplicationContext());
-        FavoriteMovie[] favoriteMoviesArray = mDb.taskDao().loadAllFavoriteMovies();
-        List<Movie> moviesList = new ArrayList<>();
-        for (FavoriteMovie favoriteMovie : favoriteMoviesArray)
-            moviesList.add(new Movie(String.valueOf(favoriteMovie.getId()), favoriteMovie.getMoviePoster()));
-        loadPostersToGrid(moviesList.toArray(new Movie[0]));
+        final LiveData<FavoriteMovie[]> favoriteMovieLiveData = mDb.taskDao().loadAllFavoriteMovies();
+        favoriteMovieLiveData.observe(this, new Observer<FavoriteMovie[]>() {
+            @Override
+            public void onChanged(@Nullable FavoriteMovie[] favoriteMovie) {
+                List<Movie> moviesList = new ArrayList<>();
+                for (FavoriteMovie favMovie : favoriteMovie)
+                    moviesList.add(new Movie(String.valueOf(favMovie.getId()), favMovie.getMoviePoster()));
+                loadPostersToGrid(moviesList.toArray(new Movie[0]));
+            }
+        });
     }
 
     private void showMoviesList() {
@@ -189,12 +199,13 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         if (mBundleRecyclerViewState != null) {
-            if (mBundleRecyclerViewState.getBoolean(LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG)) {
+            if (mBundleRecyclerViewState.getBoolean(LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG)){
                 loadFavoritePostersToGrid();
-            } else {
+            }else{
                 Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
                 mMainBinding.recyclerViewMovies.getLayoutManager().onRestoreInstanceState(listState);
             }
+
         }
     }
 

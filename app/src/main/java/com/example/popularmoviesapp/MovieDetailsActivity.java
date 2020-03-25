@@ -7,11 +7,14 @@ import android.widget.Toast;
 import android.content.Intent;
 import android.os.AsyncTask;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.View;
@@ -37,7 +40,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
     public static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
 
     private ReviewsAdapter mReviewsAdapter;
-    private TrailersAdapter mTrailersAdapter;
+    private  TrailersAdapter mTrailersAdapter;
 
     private Trailer[] mTrailerArray;
 
@@ -57,38 +60,41 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         Movie selectedMovie = intent.getParcelableExtra("Movie"); // Receive the Movie object as Parcelable
 
         movie_id = selectedMovie.getMovieId();
-//
-//        mDetailsBinding.progressBarDetails.setVisibility(View.VISIBLE);
-//        mDetailsBinding.detailsLayout.setVisibility(View.INVISIBLE);
 
         mDb = AppDatabase.getInstance(getApplicationContext());
         checkMovieInTheDb(movie_id);
 
     }
 
-    private void checkMovieInTheDb(String id) {
+    private void checkMovieInTheDb(final String id){
 
         mDetailsBinding.movieDetailsLayout.progressBarDetails.setVisibility(View.VISIBLE);
         mDetailsBinding.movieDetailsLayout.detailsLayout.setVisibility(View.INVISIBLE);
 
-        if (mDb.taskDao().loadMovie(id) != null) {
-            mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.selected_favourite);
-            FavoriteMovie favoriteMovie = mDb.taskDao().loadMovie(id);
-            populateUi(new DetailMovie(
-                    favoriteMovie.getMovieTitle(),
-                    favoriteMovie.getMoviePoster(),
-                    favoriteMovie.getMovieRelease(),
-                    favoriteMovie.getMovieRate(),
-                    favoriteMovie.getMovieOverview(),
-                    favoriteMovie.getMovieDuration()));
-        } else {
-            mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.unselected_favourite);
-            FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(movie_id, this);
-            getMovies.execute();
-        }
+        final LiveData<FavoriteMovie> favoriteMovieLiveData = mDb.taskDao().loadMovie(id);
+        favoriteMovieLiveData.observe(this, new Observer<FavoriteMovie>() {
+            @Override
+            public void onChanged(@Nullable FavoriteMovie favoriteMovie) {
+
+                if (favoriteMovie != null){
+                    mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.selected_favourite);
+                    populateUi(new DetailMovie(
+                            favoriteMovie.getMovieTitle(),
+                            favoriteMovie.getMoviePoster(),
+                            favoriteMovie.getMovieRelease(),
+                            favoriteMovie.getMovieRate(),
+                            favoriteMovie.getMovieOverview(),
+                            favoriteMovie.getMovieDuration()));
+                }else{
+                    mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.unselected_favourite);
+                    FetchAsyncTaskBase getMovies = new FetchAsyncTaskBase(id, MovieDetailsActivity.this);
+                    getMovies.execute();
+                }
+            }
+        });
     }
 
-    private void loadReviewData(String query) {
+    private void loadReviewData(String query){
 
         LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
         mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
@@ -98,7 +104,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         new FetchReviewTask().execute(query);
     }
 
-    private void loadTrailerData(String query) {
+    private void loadTrailerData(String query){
 
         LinearLayoutManager trailersLayoutManager = new LinearLayoutManager(this);
         mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setLayoutManager(trailersLayoutManager);
@@ -109,38 +115,38 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
     }
 
     @SuppressLint("SetTextI18n")
-    private void populateUi(DetailMovie movie) {
+    private void populateUi(DetailMovie movie){
 
         String notAvailable = "N/A";
 
-        if (movie.getMovieTitle() != null && !(movie.getMovieTitle().equals(""))) {
+        if(movie.getMovieTitle() != null && !(movie.getMovieTitle().equals(""))){
             mDetailsBinding.movieDetailsLayout.detailsMovieTitleTv.setText(movie.getMovieTitle());
-        } else {
+        }else{
             mDetailsBinding.movieDetailsLayout.detailsMovieTitleTv.setText(notAvailable);
         }
 
-        if (movie.getMovieRelease() != null && !(movie.getMovieRelease().equals(""))) {
+        if(movie.getMovieRelease() != null && !(movie.getMovieRelease().equals(""))){
             // substring to get the 4 first characters of the string. The year
             mDetailsBinding.movieDetailsLayout.detailsYearTv.setText(movie.getMovieRelease().substring(0, 4));
-        } else {
+        }else{
             mDetailsBinding.movieDetailsLayout.detailsYearTv.setText(notAvailable);
         }
 
-        if (movie.getMovieRate() != null && !(movie.getMovieRate().equals(""))) {
+        if(movie.getMovieRate() != null && !(movie.getMovieRate().equals(""))){
             mDetailsBinding.movieDetailsLayout.detailsRatingTv.setText(movie.getMovieRate() + "/10");
-        } else {
+        }else{
             mDetailsBinding.movieDetailsLayout.detailsRatingTv.setText(notAvailable);
         }
 
-        if (movie.getMovieOverview() != null && !(movie.getMovieOverview().equals(""))) {
+        if(movie.getMovieOverview() != null && !(movie.getMovieOverview().equals(""))){
             mDetailsBinding.movieDetailsLayout.detailsDescriptionTv.setText(movie.getMovieOverview());
-        } else {
+        }else{
             mDetailsBinding.movieDetailsLayout.detailsDescriptionTv.setText(notAvailable);
         }
 
-        if (movie.getMovieDuration() != null && !(movie.getMovieDuration().equals(""))) {
+        if(movie.getMovieDuration() != null && !(movie.getMovieDuration().equals(""))){
             mDetailsBinding.movieDetailsLayout.detailsDurationTv.setText(movie.getMovieDuration() + " min");
-        } else {
+        }else{
             mDetailsBinding.movieDetailsLayout.detailsDurationTv.setText(notAvailable);
         }
 
@@ -174,35 +180,46 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         }
     }
 
-    public void onFavoriteStarClicked(View view) {
+    public void onFavoriteStarClicked(View view){
 
-        if (mDb.taskDao().loadMovie(movie_id) != null) {
+        final LiveData<FavoriteMovie> favoriteMovieLiveData = mDb.taskDao().loadMovie(movie_id);
+        favoriteMovieLiveData.observe(this, new Observer<FavoriteMovie>() {
+            @Override
+            public void onChanged(@Nullable final FavoriteMovie favoriteMovie) {
+                favoriteMovieLiveData.removeObserver(this);
+                if(favoriteMovie != null){
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDb.taskDao().removeFavoriteMovie(favoriteMovie);
+                        }
+                    });
 
-            Toast.makeText(getApplicationContext(), mDb.taskDao().loadMovie(movie_id).getMovieTitle() + "has been removed from favorites!", Toast.LENGTH_LONG).show();
-            mDb.taskDao().removeFavoriteMovie(mDb.taskDao().loadMovie(movie_id));
+                    mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.unselected_favourite);
+                }else{
+                    int id = Integer.parseInt(movie_id);
+                    String movieTitle = mDetailsBinding.movieDetailsLayout.detailsMovieTitleTv.getText().toString();
+                    String movieRelease = mDetailsBinding.movieDetailsLayout.detailsYearTv.getText().toString();
+                    String movieRate = mDetailsBinding.movieDetailsLayout.detailsRatingTv.getText().toString()
+                            .substring(0, mDetailsBinding.movieDetailsLayout.detailsRatingTv.getText().toString().length() - 3);
+                    String movieOverview = mDetailsBinding.movieDetailsLayout.detailsDescriptionTv.getText().toString();
+                    String movieDuration = mDetailsBinding.movieDetailsLayout.detailsDurationTv.getText().toString()
+                            .substring(0, mDetailsBinding.movieDetailsLayout.detailsDurationTv.getText().toString().length() - 4);
+                    String moviePoster = mDetailsBinding.movieDetailsLayout.detailsPoster.getContentDescription().toString();
 
-            mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.unselected_favourite);
-        } else {
+                    final FavoriteMovie movieToBeSaved = new FavoriteMovie(id, movieTitle, moviePoster, movieRelease, movieRate, movieOverview, movieDuration);
 
-            int id = Integer.parseInt(movie_id);
-            String movieTitle = mDetailsBinding.movieDetailsLayout.detailsMovieTitleTv.getText().toString();
-            String movieRelease = mDetailsBinding.movieDetailsLayout.detailsYearTv.getText().toString();
-            String movieRate = mDetailsBinding.movieDetailsLayout.detailsRatingTv.getText().toString()
-                    .substring(0, mDetailsBinding.movieDetailsLayout.detailsRatingTv.getText().toString().length() - 3);
-            String movieOverview = mDetailsBinding.movieDetailsLayout.detailsDescriptionTv.getText().toString();
-            String movieDuration = mDetailsBinding.movieDetailsLayout.detailsDurationTv.getText().toString()
-                    .substring(0, mDetailsBinding.movieDetailsLayout.detailsDurationTv.getText().toString().length() - 4);
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDb.taskDao().addFavoriteMovie(movieToBeSaved);
+                        }
+                    });
 
-            String moviePoster = mDetailsBinding.movieDetailsLayout.detailsPoster.getContentDescription().toString();
-
-
-            FavoriteMovie movieToBeSaved = new FavoriteMovie(id, movieTitle, moviePoster, movieRelease, movieRate, movieOverview, movieDuration);
-
-            mDb.taskDao().addFavoriteMovie(movieToBeSaved);
-            Toast.makeText(getApplicationContext(), mDb.taskDao().loadMovie(movie_id).getMovieTitle() + "added to favorites!", Toast.LENGTH_LONG).show();
-
-            mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.selected_favourite);
-        }
+                    mDetailsBinding.movieDetailsLayout.detailsFavoriteImage.setImageResource(R.drawable.selected_favourite);
+                }
+            }
+        });
     }
 
     public class FetchReviewTask extends AsyncTask<String, Void, Review[]> {
@@ -214,9 +231,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         @Override
         protected Review[] doInBackground(String... params) {
 
-            if (params.length == 0) {
-                return null;
-            }
+            if (params.length == 0){ return null; }
             try {
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(NetworkUtils.buildUrl(params[0]));
 
@@ -232,10 +247,10 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         protected void onPostExecute(Review[] reviewData) {
             if (reviewData != null) {
                 mReviewsAdapter = new ReviewsAdapter(reviewData);
-                if (mReviewsAdapter.getItemCount() == 0) {
+                if(mReviewsAdapter.getItemCount() == 0){
                     mDetailsBinding.reviewsRecyclerviewLayout.noReviewsTv.setText(getApplicationContext().getString(R.string.no_reviews));
                     mDetailsBinding.reviewsRecyclerviewLayout.noReviewsTv.setVisibility(View.VISIBLE);
-                } else {
+                }else{
                     mDetailsBinding.reviewsRecyclerviewLayout.detailsReviewsRecyclerView.setAdapter(mReviewsAdapter);
                     mDetailsBinding.reviewsRecyclerviewLayout.noReviewsTv.setVisibility(View.GONE);
                 }
@@ -253,9 +268,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         @Override
         protected Trailer[] doInBackground(String... params) {
 
-            if (params.length == 0) {
-                return null;
-            }
+            if (params.length == 0){ return null; }
             try {
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(NetworkUtils.buildUrl(params[0]));
 
@@ -271,10 +284,10 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         protected void onPostExecute(Trailer[] trailerData) {
             if (trailerData != null) {
                 mTrailersAdapter = new TrailersAdapter(MovieDetailsActivity.this, trailerData);
-                if (mTrailersAdapter.getItemCount() == 0) {
+                if(mTrailersAdapter.getItemCount() == 0){
                     mDetailsBinding.trailersRecyclerviewLayout.noTrailersTv.setText(getApplicationContext().getString(R.string.no_trailers));
                     mDetailsBinding.trailersRecyclerviewLayout.noTrailersTv.setVisibility(View.VISIBLE);
-                } else {
+                }else{
                     mTrailerArray = trailerData;
                     mDetailsBinding.trailersRecyclerviewLayout.detailsTrailersRecyclerView.setAdapter(mTrailersAdapter);
                     mDetailsBinding.trailersRecyclerviewLayout.noTrailersTv.setVisibility(View.GONE);
@@ -283,4 +296,5 @@ public class MovieDetailsActivity extends AppCompatActivity implements AsyncTask
         }
 
     }
+
 }

@@ -23,7 +23,6 @@ public abstract class AppDatabase extends RoomDatabase {
 
                 sIntance = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, AppDatabase.DATABASE_NAME)
-                        .allowMainThreadQueries()
                         .build();
             }
         }

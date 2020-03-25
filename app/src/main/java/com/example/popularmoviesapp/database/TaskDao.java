@@ -1,5 +1,6 @@
 package com.example.popularmoviesapp.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -11,10 +12,10 @@ import java.util.List;
 public interface TaskDao {
 
     @Query("SELECT * FROM favorite_movies ORDER BY movie_release")
-    FavoriteMovie[] loadAllFavoriteMovies();
+    LiveData<FavoriteMovie[]> loadAllFavoriteMovies();
 
     @Query("SELECT * FROM favorite_movies WHERE id = :id")
-    FavoriteMovie loadMovie(String id);
+    LiveData<FavoriteMovie> loadMovie(String id);
 
     @Insert
     void addFavoriteMovie(FavoriteMovie movie);
