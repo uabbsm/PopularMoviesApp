@@ -68,6 +68,10 @@ public class MovieDetailsActivity extends AppCompatActivity
 
     }
 
+    /**
+     * populates the ui with movie info
+     * @param movie
+     */
     @SuppressLint("SetTextI18n")
     private void populateUi(DetailMovie movie){
 
@@ -118,6 +122,10 @@ public class MovieDetailsActivity extends AppCompatActivity
         displayData();
     }
 
+    /**
+     * when the task is complete populates the ui
+     * @param movie
+     */
     @Override
     public void onTaskComplete(Object movie) {
         populateUi((DetailMovie) movie);
@@ -136,6 +144,10 @@ public class MovieDetailsActivity extends AppCompatActivity
 
     // Helper methods
 
+    /**
+     * checks if an movie is on the bd
+     * @param id
+     */
     private void checkMovieInTheDb(final String id){
 
         loadingData();
@@ -163,6 +175,10 @@ public class MovieDetailsActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * loads review data
+     * @param query
+     */
     private void loadReviewData(String query){
 
         LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
@@ -173,6 +189,10 @@ public class MovieDetailsActivity extends AppCompatActivity
         new FetchReviewTask().execute(query);
     }
 
+    /**
+     * loads trailer data
+     * @param query
+     */
     private void loadTrailerData(String query){
 
         LinearLayoutManager trailersLayoutManager = new LinearLayoutManager(this);
@@ -183,6 +203,10 @@ public class MovieDetailsActivity extends AppCompatActivity
         new FetchTrailerTask().execute(query);
     }
 
+    /**
+     * handles when an movie is added to favorites
+     * @param view
+     */
     public void onFavoriteStarClicked(View view){
 
         final LiveData<FavoriteMovie> favoriteMovieLiveData = mDb.taskDao().loadMovie(movie_id);
@@ -225,6 +249,9 @@ public class MovieDetailsActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * loads data
+     */
     private void loadingData() {
         mDetailsBinding.movieDetailsLayout.progressBarDetails.setVisibility(View.VISIBLE);
         mDetailsBinding.movieDetailsLayout.detailsLayout.setVisibility(View.INVISIBLE);
@@ -232,6 +259,9 @@ public class MovieDetailsActivity extends AppCompatActivity
         mDetailsBinding.trailersRecyclerviewLayout.trailersLayout.setVisibility(View.GONE);
     }
 
+    /**
+     * displays data
+     */
     private void displayData() {
         mDetailsBinding.movieDetailsLayout.progressBarDetails.setVisibility(View.INVISIBLE);
         mDetailsBinding.movieDetailsLayout.detailsLayout.setVisibility(View.VISIBLE);

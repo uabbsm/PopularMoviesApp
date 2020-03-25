@@ -8,4 +8,7 @@
     <dimen name="detailsceen_title_padding_left">20dp</dimen>
     <dimen name="detailsceen_title_text_size">30sp</dimen>
     <dimen name="twoHundredSp">200sp</dimen>
+    <dimen name="zeroDp">0dp</dimen>
+    <dimen name="sixteenDp">16dp</dimen>
+    <dimen name="twentySp">20sp</dimen>
 </resources>

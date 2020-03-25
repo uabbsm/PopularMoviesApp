@@ -14,24 +14,18 @@
 
             <include
                 android:id="@+id/movie_details_layout"
-                layout="@layout/movie_details_view"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                layout="@layout/movie_details_view" />
 
             <include
                 android:id="@+id/trailers_recyclerview_layout"
                 layout="@layout/trailers_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="@dimen/zeroDp"
                 android:layout_weight="1" />
 
             <include
                 android:id="@+id/reviews_recyclerview_layout"
-                layout="@layout/reviews_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                layout="@layout/reviews_recycler_view"/>
 
         </LinearLayout>
     </ScrollView>

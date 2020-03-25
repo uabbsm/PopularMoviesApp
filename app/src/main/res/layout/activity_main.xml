@@ -25,10 +25,10 @@
             android:id="@+id/tv_error_message_display"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:padding="@dimen/sixteenDp"
             android:layout_gravity="center"
             android:text="@string/error_message"
-            android:textSize="20sp"
+            android:textSize="@dimen/twentySp"
             android:visibility="invisible" />
 
     </FrameLayout>

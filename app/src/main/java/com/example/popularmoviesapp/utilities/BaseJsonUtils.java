@@ -52,6 +52,13 @@ public final class BaseJsonUtils {
 
     }
 
+
+    /**
+     *  Get the movies details from Json
+     * @param json
+     * @return DetailMovie
+     * @throws JSONException invalid json object
+     */
     public static DetailMovie getDetailMovieStringsFromJson(String json) throws JSONException {
 
         JSONObject moviesJson = new JSONObject(json);
@@ -71,6 +78,12 @@ public final class BaseJsonUtils {
                 movieDuration);
     }
 
+    /**
+     *  Get reviews from json
+     * @param json
+     * @return reviewsArray
+     * @throws JSONException
+     */
     public static Review[] getReviewsStringsFromJson(String json) throws JSONException {
 
         JSONObject reviewsJson = new JSONObject(json);
@@ -90,6 +103,12 @@ public final class BaseJsonUtils {
 
     }
 
+    /**
+     * Get trailers from json
+     * @param json
+     * @return trailersArray
+     * @throws JSONException
+     */
     public static Trailer[] getTrailersStringsFromJson(String json) throws JSONException {
 
         JSONObject trailersJson = new JSONObject(json);

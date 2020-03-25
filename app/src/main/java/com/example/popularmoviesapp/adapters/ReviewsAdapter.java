@@ -10,6 +10,9 @@ import android.widget.TextView;
 import com.example.popularmoviesapp.R;
 import com.example.popularmoviesapp.models.Review;
 
+/**
+ * Exposes the list of reviews
+ */
 public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsViewHolder> {
 
     private Review[] mReviewsArray;
@@ -20,6 +23,12 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsV
         this.mReviewsArray = numberOfReviews;
     }
 
+    /**
+     * inflates the recyclerview of the review list
+     * @param viewGroup
+     * @param i
+     * @return reviewsviewholder
+     */
     @NonNull
     @Override
     public ReviewsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -36,6 +45,10 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsV
         mContext.setText(mReviewsArray[position].getContent());
     }
 
+    /**
+     * count the number of items of the array
+     * @return
+     */
     @Override
     public int getItemCount() {
         if (null == mReviewsArray) return 0;

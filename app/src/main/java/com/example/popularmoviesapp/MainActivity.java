@@ -1,6 +1,5 @@
 package com.example.popularmoviesapp;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -57,6 +56,10 @@ public class MainActivity extends AppCompatActivity
 
     private boolean favorites_flag = false; // a flag to track whether sorting as favorites has been selected or not
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +81,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     *
+     * @param item
+     */
     @Override
     public void onListItemClick(int item) {
         Intent intent = new Intent(this, MovieDetailsActivity.class);
@@ -85,6 +92,11 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    /**
+     * inflates the main screen options
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -92,6 +104,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * changes the query based on the option selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -114,17 +131,29 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * loads the posters to the grid
+     * @param movies
+     */
     @Override
     public void onTaskComplete(Object movies) {
         loadPostersToGrid((Movie[]) movies);
     }
 
+    /**
+     * Lifecycle methods
+     * @param savedInstanceState
+     */
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
         favorites_flag = savedInstanceState.getBoolean(LIFECYCLE_CALLBACKS_BOOL_FAVORITES_FLAG);
     }
 
+    /**
+     * Lifecycle methods
+     * @param outState
+     */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         String lifecycleSortBy = query;
@@ -133,6 +162,9 @@ public class MainActivity extends AppCompatActivity
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Lifecycle methods
+     */
     @Override
     protected void onPause() {
         mBundleRecyclerViewState = new Bundle();
@@ -142,6 +174,9 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
     }
 
+    /**
+     * Lifecycle methods
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -159,6 +194,10 @@ public class MainActivity extends AppCompatActivity
 
     // Helper methods
 
+    /**
+     * Load move data
+     * @param query
+     */
     private void loadMovieData(String query){
         mMainBinding.progressBar.setVisibility(View.VISIBLE);
         showMoviesList();
@@ -167,6 +206,9 @@ public class MainActivity extends AppCompatActivity
         getMovies.execute();
     }
 
+    /**
+     * loads the posters of the movies to the grid
+     */
     private void loadFavoritePostersToGrid() {
         mDb = AppDatabase.getInstance(getApplicationContext());
         final LiveData<FavoriteMovie[]> favoriteMovieLiveData = mDb.taskDao().loadAllFavoriteMovies();
@@ -181,31 +223,48 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * shows the movie list
+     */
     private void showMoviesList() {
         mMainBinding.tvErrorMessageDisplay.setVisibility(View.INVISIBLE);
         mMainBinding.recyclerViewMovies.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * shows an error message
+     */
     private void showErrorMessage() {
         mMainBinding.recyclerViewMovies.setVisibility(View.INVISIBLE);
         mMainBinding.tvErrorMessageDisplay.setText(getString(R.string.error_message));
         mMainBinding.tvErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * shows "no favorites" message
+     */
     private void showNoFavorites() {
         mMainBinding.tvErrorMessageDisplay.setText(getString(R.string.no_favorites_yet));
         mMainBinding.recyclerViewMovies.setVisibility(View.INVISIBLE);
         mMainBinding.tvErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-    // Following this thread: https://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns
-    // The best way to calculate the number of the columns that will be displayed
+    /**
+     * https://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns
+     * The best way to calculate the number of the columns that will be displayed
+     * @param context
+     * @return
+     */
     public static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         return (int) (dpWidth / 180);
     }
 
+    /**
+     * load the posters to grid
+     * @param movies
+     */
     private void loadPostersToGrid(Movie[] movies) {
         mMainBinding.progressBar.setVisibility(View.INVISIBLE);
         if (movies != null) {
@@ -222,6 +281,4 @@ public class MainActivity extends AppCompatActivity
             showErrorMessage();
         }
     }
-
-
 }

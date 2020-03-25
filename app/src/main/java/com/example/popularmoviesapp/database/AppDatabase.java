@@ -12,9 +12,11 @@ import androidx.room.RoomDatabase;
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
+    //For Singleton instanciation
     private static final Object LOCK = new Object();
     private static final String DATABASE_NAME = "movies_db";
     private static AppDatabase sIntance;
+
 
     public static AppDatabase getInstance(Context context) {
         if (sIntance == null) {
