@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">PopularMoviesApp</string>
+
+    <!-- Menu titles-->
+    <string name="most_popular"> Most Popular</string>
+    <string name="highest_rated"> Highest Rated</string>
+
+    <!-- Poster stuff -->
+    <string name="error_message">Please refresh, an error has occured</string>
+    <string name="the_movie_poster">The Movie Poster</string>
+    <string name="movie_name">Movie Name</string>
+    <string name="movie_poster_description">The movie poster</string>
+    <string name="year">Year</string>
+    <string name="duration_tv">Duration</string>
+    <string name="rating">Rating</string>
+    <string name="description">Description</string>
+    <string name="duration">Duration</string>
+    <string name="trailers">Trailers</string>
+    <string name="reviews">Reviews</string>
+    <string name="no_reviews">No reviews yet</string>
+
+    <string name="name_video">Name</string>
+    <string name="type_video">Type</string>
+    <string name="no_trailers">No</string>
+
+    <string name="error_load_video">There was an error while opening the video!!</string>
+
+    <string name="no_favorites_yet">No Favorite movies!</string>
 </resources>
